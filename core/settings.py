@@ -68,6 +68,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8080",
     "https://annotation-project.herokuapp.com",
+    "https://neofront.herokuapp.com"
 ]
 
 

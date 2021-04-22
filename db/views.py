@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
 from django.db.models import Q
-from .driver.onthology_driver import Onthology
+from .onthology_driver import Onthology
 
 uri = 'bolt://infra.iis.nsk.su'
 user="neo4j"
