@@ -21,6 +21,16 @@ class Onthology:
         node = self.driver.get_node_by_ID(id)
         return self.driver.get_nodes_by_label(node.get('uri'))
 
+    def getClassObject(self, id):
+        node = self.driver.get_node_by_ID(id)
+        node_labels = list(node.labels)
+        label = ''
+        for l in node_labels:
+            if 'http://erlangen-crm.org/current/' in l:
+                label = l
+        node2 = self.driver.get_nodes_by_params('Resource',{'uri': label })[0]
+        return node, node2.get('signature')
+
     def nodeToDict(self, node):
         result = {}
         result['id'] = node.id
@@ -30,7 +40,13 @@ class Onthology:
             result[param] = node.get(param)
         return result
 
-
+    def updateEntity(self, new_node):
+        params = new_node['params']
+        id = new_node['id']
+        props = {}
+        for p in params:
+            props[p] = new_node[p]
+        return self.driver.set_node(id, props)
     def close(self):
         self.driver.close()
         return True

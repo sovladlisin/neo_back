@@ -32,7 +32,7 @@ class NeoApp:
                 value = params[param]
                 key = param
                 link = " " if iter == 0 else " AND"  
-                search_query += "{link} n.{key} = {value} ".format(link=link ,key=key, value=value)
+                search_query += "{link} n.`{key}` = {value} ".format(link=link ,key=key, value=json.dumps(value))
                 iter += 1
 
             query = "MATCH (n:`{label}`) {search} RETURN n AS node".format(label=label, search=search_query)
@@ -108,6 +108,25 @@ class NeoApp:
         
         return result[0]
 
+    def set_node(self, id, props):
+        def _service_func(tx, id, props):
+            data = "{"
+            # print(props)
+            for p in props:
+                temp = "`{p}`".format(p=p)
+                temp +=':'
+                temp += "{val}".format(val = json.dumps(props[p]))
+                data += temp + ','
+            data = data[:-1]
+            data += "}"
+            query = "MATCH (n) WHERE ID(n) = {id} SET n += {data} RETURN n AS node".format(id=id, data=data)
+            request = tx.run(query)
+            return [record["node"] for record in request]
+
+        with self.driver.session() as session:
+            result = session.write_transaction(_service_func,  id, props)
+        
+        return result[0]
     
 
         

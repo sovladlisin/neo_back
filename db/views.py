@@ -37,6 +37,18 @@ def getClassObjects(request):
         return JsonResponse(result, safe=False)
     return HttpResponse('Wrong request')
 
+def getClassObject(request):
+    if request.method == "GET":
+        id = request.GET.get('id', None)
+        if id is None:
+            return HttpResponse(status=404)
+        o = Onthology(uri,user, password)
+        obj, sig = o.getClassObject(id)
+        result = o.nodeToDict(obj)
+        result['signature'] = sig
+        return JsonResponse(result, safe=False)
+    return HttpResponse('Wrong request')
+
 def getSubClasses(request):
     if request.method == "GET":
         id = request.GET.get('id', None)
@@ -50,4 +62,11 @@ def getSubClasses(request):
         return JsonResponse(result, safe=False)
     return HttpResponse('Wrong request')
 
-
+@csrf_exempt
+def updateEntity(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        o = Onthology(uri,user, password)
+        node = o.updateEntity(data)
+        return JsonResponse(o.nodeToDict(node), safe=False)
+    return HttpResponse('Wrong request')
