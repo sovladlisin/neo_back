@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'db',
+    'user_auth',
     'rest_framework',
     'db_file_storage',
     # 'knox',
@@ -69,6 +70,18 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "https://annotation-project.herokuapp.com",
     "https://neofront.herokuapp.com"
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'token'
 ]
 
 

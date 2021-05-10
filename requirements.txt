@@ -33,3 +33,4 @@ django-rest-framework
 django-cors-headers
 django-sendfile
 neo4j
+pyjwt

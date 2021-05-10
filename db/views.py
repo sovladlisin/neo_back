@@ -8,6 +8,7 @@ import datetime
 from django.db.models import Q
 from .onthology_driver import Onthology
 from.onthology_namespace import *
+from user_auth.views import authenticate_user
 
 uri = 'bolt://infra.iis.nsk.su'
 user="neo4j"
@@ -16,6 +17,7 @@ password="pupil-flute-lunch-quarter-symbol-1816"
 
 def getClasses(request):
     if request.method == "GET":
+        print(request.headers.get('Token', None))
         o = Onthology(uri,user, password)
         res = o.getParentClasses('')
         result = []
@@ -136,6 +138,16 @@ def getObjectsByClassUri(request):
 @csrf_exempt
 def updateEntity(request):
     if request.method == 'POST':
+
+        token = request.headers.get('Token', None)
+        if token is None:
+            return HttpResponse(status=401)
+        user = authenticate_user(token)
+        if user is None:
+            return HttpResponse(status=401)
+        if user.is_editor == False:
+            return HttpResponse(status=401)
+
         data = json.loads(request.body.decode('utf-8'))
         o = Onthology(uri,user, password)
         node = o.updateEntity(data)
@@ -145,6 +157,17 @@ def updateEntity(request):
 @csrf_exempt
 def addEntity(request):
     if request.method == 'POST':
+
+        token = request.headers.get('Token', None)
+        if token is None:
+            return HttpResponse(status=401)
+        user = authenticate_user(token)
+        if user is None:
+            return HttpResponse(status=401)
+        if user.is_editor == False:
+            return HttpResponse(status=401)
+
+
         data = json.loads(request.body.decode('utf-8'))
         labels = data['labels']
         node = data['node']
@@ -157,6 +180,17 @@ def addEntity(request):
 @csrf_exempt
 def deleteEntity(request):
     if request.method == 'DELETE':
+
+        token = request.headers.get('Token', None)
+        if token is None:
+            return HttpResponse(status=401)
+        user = authenticate_user(token)
+        if user is None:
+            return HttpResponse(status=401)
+        if user.is_editor == False:
+            return HttpResponse(status=401)
+
+            
         id = request.DELETE.get('id', None)
         if id is None:
             return HttpResponse(status=404)
