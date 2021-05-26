@@ -51,6 +51,7 @@ def login(request):
 def authenticate_user(token):
     if len(token) == 0:
         return None
+    print(token)
     user_dict = jwt.decode(token, KEY, algorithms=["HS256"])
     username = user_dict.get('username', None)
     password = user_dict.get('password', None)

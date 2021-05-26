@@ -9,6 +9,12 @@ from django.db.models import Q
 from django.core.files.base import ContentFile
 from .models import Resource
 from user_auth.views import authenticate_user
+from .onthology_driver import Onthology
+from.onthology_namespace import *
+
+uri = 'bolt://infra.iis.nsk.su'
+user="neo4j"
+password="pupil-flute-lunch-quarter-symbol-1816"
 
 @csrf_exempt
 def uploadFile(request):
@@ -17,27 +23,43 @@ def uploadFile(request):
         token = request.headers.get('Token', None)
         if token is None:
             return HttpResponse(status=401)
-        user = authenticate_user(token)
-        if user is None:
+        user_l = authenticate_user(token)
+        if user_l is None:
             return HttpResponse(status=401)
-        if user.is_admin == False:
+        if user_l.is_admin == False:
             return HttpResponse(status=401)
 
 
-
+  
         file_d = request.FILES['file']
+
         name = request.GET.get('name','')
+        carrier_uri = request.GET.get('carrier_uri','')
+        type_uri = request.GET.get('type_uri','')
+        object_id = request.GET.get('object_id','')
+
+        o = Onthology(uri,user, password)
+
+        object_node = o.getEntityById(object_id)
+        object_uri = object_node.get('uri')
+
+
         res = Resource()
         res.source.save(file_d.name,  ContentFile(file_d.read()))
         res.name = name
+        res.original_object_uri = object_uri
         res.save()
 
-        result = {}
-        result['name'] = res.name
-        result['source'] = res.source.url
-        result['id'] = res.pk
+        o = Onthology(uri,user, password)
 
-        return JsonResponse(result, safe=False)
+        r = o.createDigitalCarrier(res.pk, res.name, carrier_uri, type_uri,object_id)
+
+        # result = {}
+        # result['name'] = res.name
+        # result['source'] = res.source.url
+        # result['id'] = res.pk
+
+        return JsonResponse(o.nodeToDict(r), safe=False)
     return HttpResponse(status=405)
 
 def getFiles(request):
@@ -74,3 +96,33 @@ def deleteFile(request):
         resource.delete()
         return HttpResponse(status=200)
     return HttpResponse(status=405)
+
+@csrf_exempt
+def changeComments(request):
+    if request.method == 'POST':
+
+        token = request.headers.get('Token', None)
+        if token is None:
+            return HttpResponse(status=401)
+        user = authenticate_user(token)
+        if user is None:
+            return HttpResponse(status=401)
+        if user.is_admin == False:
+            return HttpResponse(status=401)
+
+        data = json.loads(request.body.decode('utf-8'))
+        comments = data.get('comments', None)
+        commentary_uri = data.get('commentary_uri', None)
+
+        commentary = ContentFile(b'')
+        for comment in comments:
+            temp = comment['text'] + '\n'
+            commentary.write(temp.encode('utf-8'))
+
+
+
+        resource_texts = Resource.objects.get(original_object_uri=commentary_uri)
+        resource_texts.source.save(
+            'commentary_' + str(resource_texts.pk) + '.txt', commentary)
+        return HttpResponse(status=200)
+    return HttpResponse(status=403)

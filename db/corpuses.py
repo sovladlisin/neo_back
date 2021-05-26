@@ -37,4 +37,3 @@ def getSubCorpuses(request):
             result.append(o.nodeToDict(node))
         return JsonResponse(result, safe=False)
     return HttpResponse('Wrong request')
-
