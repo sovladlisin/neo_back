@@ -27,6 +27,8 @@ def register(request):
         user.save()
 
         user_info = UserInfo(user=user)
+        user_info.is_editor = False
+        user_info.is_admin = False
         user_info.save()
 
         encoded = jwt.encode({'username': user.username, 'password': password}, KEY, algorithm="HS256")

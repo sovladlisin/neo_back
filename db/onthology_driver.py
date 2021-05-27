@@ -29,9 +29,12 @@ class Onthology:
         return self.driver.get_node_children(id, [SUB_CLASS], [CLASS])
 
     def getParentClasses(self):
-        res = self.driver.get_node_without_children([CLASS], [SUB_CLASS], [CLASS])
-        return list(filter(lambda x: self.main_label == "/".join([item for item in x.get('uri').split('/')[:-1]]), res))
-
+        if self.main_label == RESOURCE_NAMESPACE:
+            res = self.driver.get_node_without_children([CLASS], [SUB_CLASS], [CLASS])
+            return list(filter(lambda x: self.main_label == "/".join([item for item in x.get('uri').split('/')[:-1]]), res))
+        else:
+            query = "MATCH (node:`{class_l}`:`{domain}`) WHERE NOT (node) - [:`{r}`] -> (:`{class_l}`) RETURN node".format(class_l=CLASS, r=SUB_CLASS, domain=self.main_label)
+            return self.driver.custom_query(query, 'node')
     def getClassAttributes(self, uri):
         class_node = self.driver.get_node_by_params({'uri': uri})
         attributes = self.driver.get_node_children(class_node.id, [PROPERTY_DOMAIN],[PROPERTY_LABEL])
@@ -224,7 +227,7 @@ class Onthology:
     def updateIndex(self):
         print(self.main_label)
         index_name = self.main_label + '/index'
-        params_query = "match (n) <- [:`{domain}`] - (r:`{datatype}`) where n10s.rdf.getIRINamespace(n.uri) = '{namespace}/' return r.uri as node".format(domain=PROPERTY_DOMAIN, datatype=PROPERTY_LABEL, namespace=self.main_label)
+        params_query = "match (n:`{namespace}`) <- [:`{domain}`] - (r:`{datatype}`) return r.uri as node".format(domain=PROPERTY_DOMAIN, datatype=PROPERTY_LABEL, namespace=self.main_label)
        
         params = self.driver.custom_query(params_query, 'node')
         labels = [self.main_label]
