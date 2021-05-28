@@ -13,8 +13,14 @@ class Onthology:
         return self.driver.get_nodes_by_labels([DOMAIN_ONTOLOGY])
 
     def getClasses(self):
-        res = self.driver.get_nodes_by_labels([CLASS])
-        return list(filter(lambda x: self.main_label == "/".join([item for item in x.get('uri').split('/')[:-1]]), res))
+        if self.main_label == RESOURCE_NAMESPACE:
+            res = self.driver.get_nodes_by_labels([CLASS])
+            return list(filter(lambda x: self.main_label == "/".join([item for item in x.get('uri').split('/')[:-1]]), res))
+        else:
+            query = "MATCH (node:`{class_l}`:`{domain}`) RETURN node".format(class_l=CLASS,  domain=self.main_label)
+            return self.driver.custom_query(query, 'node')
+
+        
 
     def getEntityById(self, id):
         return self.driver.get_node_by_ID(id)
