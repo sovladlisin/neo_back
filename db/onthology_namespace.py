@@ -46,3 +46,7 @@ RESOURCE_NAMESPACE = "http://erlangen-crm.org/current"
 
 VISUAL_ITEM = "http://erlangen-crm.org/current/E36_Visual_Item"
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
+LING_OBJECT = "http://erlangen-crm.org/current/E33_Linguistic_Object"
+LANGUAGE = "http://erlangen-crm.org/current/E56_Language"
+GENRE = "http://erlangen-crm.org/current/F62_Genre"

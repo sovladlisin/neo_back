@@ -233,10 +233,21 @@ class Onthology:
     def updateIndex(self):
         print(self.main_label)
         index_name = self.main_label + '/index'
-        params_query = "match (n:`{namespace}`) <- [:`{domain}`] - (r:`{datatype}`) return r.uri as node".format(domain=PROPERTY_DOMAIN, datatype=PROPERTY_LABEL, namespace=self.main_label)
        
+        if self.main_label == RESOURCE_NAMESPACE:
+            labels = [CORPUS, PLACE_URI, PERSON_URI,DIGITAL_CARRIER_URI,VISUAL_ITEM,LING_OBJECT, LANGUAGE,GENRE]
+            params_query = "match (n) <- [:`{domain}`] - (r:`{datatype}`) return r.uri as node".format(domain=PROPERTY_DOMAIN, datatype=PROPERTY_LABEL, namespace=self.main_label)
+
+        else:
+            params_query = "match (n:`{namespace}`) <- [:`{domain}`] - (r:`{datatype}`) return r.uri as node".format(domain=PROPERTY_DOMAIN, datatype=PROPERTY_LABEL, namespace=self.main_label)
+            labels = [self.main_label]
+        
         params = self.driver.custom_query(params_query, 'node')
-        labels = [self.main_label]
+        params.append('http://www.universals.com/ontologies/2020/1/cultural_universals#Название')
+        params.append('https://www.geonames.org/ontology#name')
+        params = list(set(params))
+
+        
         config = "{analyzer: 'russian'}"
         create_query = "CALL db.index.fulltext.createNodeIndex( '{index_name}', {labels}, {params}, {config})".format(index_name=index_name,labels = labels, params=params,config=config )
         drop_query = "CALL db.index.fulltext.drop('{index_name}')".format(index_name=index_name)
@@ -263,7 +274,7 @@ class Onthology:
             return res[:-1]
 
         index_name = self.main_label + '/index'
-        search = transform_search(search_array,connector)
+        search = search_array
         query = "CALL db.index.fulltext.queryNodes('{index_name}', '{search}') YIELD node RETURN node".format(search=search,index_name=index_name )
         return self.driver.custom_query(query, 'node')
 
