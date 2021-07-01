@@ -13,6 +13,8 @@ class TextRelationAdmin(admin.ModelAdmin):
 class MarkupAdmin(admin.ModelAdmin):
     model = Markup
     
+
+
 admin.site.register(Resource, ResourceAdmin)
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(TextRelation, TextRelationAdmin)
