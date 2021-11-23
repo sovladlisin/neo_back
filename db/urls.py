@@ -4,7 +4,9 @@ from .views import deleteOntology, searchIndex, updateIndex, getClassFullSignatu
 from .corpuses import getCorpuses, getSubCorpuses
 from .files import changeComments,uploadFile,getFiles,deleteFile
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
-
+from .resources import (
+    getAllResources
+)
 urlpatterns = [
     path('getDomainOntologies',getDomainOntologies , name='getDomainOntologies'),
     path('deleteOntology',deleteOntology , name='deleteOntology'),
@@ -12,7 +14,10 @@ urlpatterns = [
     path('getClasses',getClasses , name='getClasses'),
     path('getAllClasses',getAllClasses , name='getAllClasses'),
     path('getClassObjects',getClassObjects , name='getClassObjects'),
-    path('getSubClasses',getSubClasses , name='getSubClasses'),
+    path('getSubClasses',getSubClasses, name='getSubClasses'),
+
+    path('getAllResources',getAllResources, name='getAllResources'),
+
 
     path('updateEntity',updateEntity , name='updateEntity'),
     path('addEntity',addEntity , name='addEntity'),

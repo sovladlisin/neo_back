@@ -14,24 +14,11 @@ uri = 'bolt://infra.iis.nsk.su'
 user="neo4j"
 password="pupil-flute-lunch-quarter-symbol-1816"
 
-def getCorpuses(request):
+def getAllResources(request):
     if request.method == "GET":
         o = Onthology(uri,user, password)
-        res = o.getCorpuses()
+        res = o.getResources()
         
         return JsonResponse(res, safe=False)
     return HttpResponse('Wrong request')
 
-def getSubCorpuses(request):
-    if request.method == "GET":
-        id = request.GET.get('id', None)
-        if id is None:
-            return HttpResponse(status=404)
-
-        o = Onthology(uri,user, password)
-        res = o.getSubCorpuses(id)
-        result = []
-        for node in res:
-            result.append(o.nodeToDict(node))
-        return JsonResponse(result, safe=False)
-    return HttpResponse('Wrong request')

@@ -11,7 +11,7 @@ idna==2.8
 isort==4.3.21
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
-lxml==4.4.1
+
 mccabe==0.6.1
 mock==3.0.5
 multidict==4.5.2
@@ -26,7 +26,6 @@ sqlparse==0.3.0
 whitenoise==4.1.4
 wrapt==1.11.2
 yarl==1.2.6
-psycopg2
 Pillow
 django-db-file-storage
 django-rest-framework

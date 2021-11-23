@@ -194,10 +194,61 @@ class Onthology:
 
         return created_attr
 
+    def getResources(self):
+        result = {
+            'actors_count': 0,
+            'places_count': 0,
+            'texts_count': 0,
+            'video_count': 0,
+            'audio_count': 0,
+            'images_count': 0,
+
+            'actors': [],
+            'places': [],
+            'texts': [],
+            'video': [],
+            'audio': [],
+            'images': [],
+        }
+        res = self.driver.get_nodes_by_labels([OBJECT])
+        for r in res:
+            temp = self.nodeToDict(r)
+            if PERSON_URI in temp['labels']:
+                result['actors_count'] = result['actors_count'] + 1
+                result['actors'].append(temp)
+            if PLACE_URI in temp['labels']:
+                result['places_count'] = result['places_count'] + 1
+                result['places'].append(temp)
+
+            if LING_OBJECT in temp['labels']:
+                result['texts_count'] = result['texts_count'] + 1
+                result['texts'].append(temp)
+
+            if VISUAL_ITEM in temp['labels']:
+                result['images_count'] = result['images_count'] + 1
+                result['images'].append(temp)
+
+
+
+        return result
 
     def getCorpuses(self):
+        result = []
         res = self.driver.get_node_without_children_reverse([CORPUS],[CORPUS_RELATION], [CORPUS])
-        return res
+        for r in res:
+            query = "match (n)-[:`{r}`*]-(node:`{l}`) where ID(n)={id} return node".format(r=CORPUS_RELATION, l=LING_OBJECT, id=r.id)
+            res2 = self.driver.custom_query(query, 'node')
+
+            temp = self.nodeToDict(r)
+            texts = []
+            for t in res2:
+                texts.append(self.nodeToDict(t))
+            temp['texts'] = texts
+
+            result.append(temp)
+
+        return result
+
 
     def getSubCorpuses(self,id):
         res = self.driver.get_node_parents(id,[CORPUS_RELATION], ['Resource'])
