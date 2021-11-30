@@ -52,7 +52,7 @@ def uploadFile(request):
         o = Onthology(uri,user, password)
 
         r = o.connectDigitalToResource(file_type, res.id,name,object_node.id )
-        res.original_object_uri = object_uri['uri']
+        res.original_object_uri = r['uri']
         res.save()
 
         return JsonResponse(o.nodeToDict(r), safe=False)
