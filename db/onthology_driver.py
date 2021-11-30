@@ -208,8 +208,10 @@ class Onthology:
         return True
 
     def getObjectVisualItems(self,node_id):
-        s = self.driver.custom_query('match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) return node', 'node')
+        s = self.driver.custom_query(
+            'match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY), 'node')
         response = []
+        print(s)
         for i in s:
             node_uri = i[NOTE_URI]
             r_id = node_uri.split('_')[0]
