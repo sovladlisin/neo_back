@@ -34,7 +34,7 @@ def getWorkspace(request):
         translation_url = translation_text_obj.source.url
         commentary_url = commentary_text_obj.source.url
         
-        resources = o.getObjectVisualItems(origin_node_dict.id)
+        resources = o.getObjectVisualItems(origin_node.id)
         result = {
             "origin_url":origin_url,
             "translation_url":translation_url,
