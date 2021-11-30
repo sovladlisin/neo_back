@@ -27,6 +27,8 @@ TEXT_TYPE = "http://erlangen-crm.org/current/F60_Text_Type"
 IMAGE_TYPE = "http://erlangen-crm.org/current/F61_Image_Type"
 VIDEO_TYPE = "http://erlangen-crm.org/current/F58_Video_Type"
 
+MP4 = 'http://erlangen-crm.org/current/mp4'
+
 # PROPERTY
 # (class) <- [pr_Rel] - (new_type) - [pr_Range] -> (type)
 PROPERTY_DOMAIN = "http://www.w3.org/2000/01/rdf-schema#domain"
@@ -50,3 +52,5 @@ RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 LING_OBJECT = "http://erlangen-crm.org/current/E33_Linguistic_Object"
 LANGUAGE = "http://erlangen-crm.org/current/E56_Language"
 GENRE = "http://erlangen-crm.org/current/F62_Genre"
+
+REFERS_TO = 'http://erlangen-crm.org/current/P67_refers_to'

@@ -3,6 +3,9 @@ from .onthology_namespace import *
 import json
 import datetime
 from  neo4j import time
+from .models import Resource
+import uuid
+
 class Onthology:
 
     def __init__(self, uri, user, password, domain = ''):
@@ -77,8 +80,9 @@ class Onthology:
 
         attributes = type_nodes
         attributes_obj = self.driver.get_connections_with_labels(id, [OBJECT])
+        resources = self.getObjectVisualItems(id)
 
-        return node, signature, attributes, attributes_obj
+        return node, signature, attributes, attributes_obj, resources
 
     def nodeToDict(self, node):
         result = {}
@@ -153,7 +157,7 @@ class Onthology:
 
         return created_node
 
-    def createDigitalCarrier(self, file_id, file_name, carrier_uri, type_uri, object_id):
+    def  createDigitalCarrier(self, file_id, file_name, carrier_uri, type_uri, object_id):
         carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': carrier_uri})
 
         carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
@@ -173,6 +177,54 @@ class Onthology:
 
 
         return carrier
+
+    def connectDigitalToResource(self, file_type, file_id, file_name, resource_id):
+        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': uuid.uuid4()})
+
+        # that its digital
+        carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
+        self.driver.create_relation_forward(carrier.id,carrier_class.id, [RDF_TYPE], {})
+
+        # that its mp4/audio etc.
+        if file_type == 'mp4':
+            recource_type_uri = MP4
+
+        
+        recource_type = self.driver.get_node_by_uri(recource_type_uri)
+        self.driver.create_relation_forward(carrier.id,recource_type.id, [HAS_TYPE], {})
+
+        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: "{id}_{name}".format(id=file_id, name=file_name), 'uri': uuid.uuid4()})
+        appelation_class = self.driver.get_node_by_uri(APPELATION)
+        self.driver.create_relation_forward(carrier.id,appelation_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
+
+        # create visual item
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri': uuid.uuid4()})
+        self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
+
+        # connect to resource
+        self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
+
+        return True
+
+    def getObjectVisualItems(self,node_id):
+        s = self.driver.custom_query('match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) return node', 'node')
+        response = []
+        for i in s:
+            node_uri = i[NOTE_URI]
+            r_id = node_uri.split('_')[0]
+            f = Resource.objects.get(pk=int(r_id))
+            temp = {}
+            temp['name'] = f.name
+            temp['source'] = f.source.url
+            temp['id'] = f.pk
+            response.append({
+                'file': temp
+            })
+        return response
+
+        
+
 
     def addClassAttribute(self, class_id, type_uri, props):
         type_node = self.driver.get_node_by_params({'uri': type_uri})

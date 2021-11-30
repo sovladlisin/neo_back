@@ -10,6 +10,7 @@ class Resource(models.Model):
     source = models.FileField(upload_to='db.File/bytes/filename/mimetype', blank=True, null=True)
     name = models.CharField(default='Не указано', max_length=500)
     original_object_uri = models.CharField(default='', max_length=1000)
+    resource_type = models.CharField(default='', max_length=300)
 
 class Markup(models.Model):
     user = models.ForeignKey(

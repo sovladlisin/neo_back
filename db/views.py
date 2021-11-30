@@ -74,17 +74,9 @@ def getClassObject(request):
 
         o = Onthology(uri,user, password)
 
-        node, signature, attributes, attributes_obj = o.getClassObject(id)
+        node, signature, attributes, attributes_obj, resources = o.getClassObject(id)
 
         obj = o.nodeToDict(node)
-        fileLink = ''
-        if VISUAL_ITEM in obj['labels']:
-            try:
-                res = Resource.objects.all().filter(original_object_uri=obj['uri']).first()
-                fileLink = res.source.url
-            except:
-                pass
-
 
         attrs = []
         attrs_obj = []
@@ -119,7 +111,7 @@ def getClassObject(request):
         for t in text_nodes:
             texts.append(o.nodeToDict(t))
 
-        return JsonResponse({'object': obj, 'class_signature': signature, 'class_attributes': attrs, 'relations': attrs_obj, 'fileLink': fileLink, 'entities': entities, 'texts': texts }, safe=False)
+        return JsonResponse({'object': obj, 'class_signature': signature, 'class_attributes': attrs, 'relations': attrs_obj, 'entities': entities, 'texts': texts, 'resources': resources }, safe=False)
     return HttpResponse('Wrong request')
 
 def getClassFullSignature(request):
