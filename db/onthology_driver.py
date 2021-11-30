@@ -229,24 +229,32 @@ class Onthology:
 
     def getObjectVisualItems(self,node_id):
         s = self.driver.custom_query(
-            'match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY), 'node')
+            'match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) where ID(k) = {id} return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY, id=node_id), 'node')
         response = []
-        print(s)
         for i in s:
             node_uri = i[NOTE_URI]
             if '_' not in node_uri:
                 pass
             else:
+
                 r_id = node_uri.split('_')[0]
                 f = Resource.objects.get(pk=int(r_id))
                 temp = {}
                 temp['name'] = f.name
                 temp['source'] = f.source.url
                 temp['id'] = f.pk
+                temp['type'] = f.resource_type
                 response.append({
-                    'file': temp
+                    'file': temp,
+                    'node': self.getVisualItemDesc(i.id)
                 })
         return response
+
+    def getVisualItemDesc(self, id):
+        s = self.driver.custom_query(
+            'match (node) <- [:`{carries}`] - (f) - [:`{identified}`] -> (n) where ID(n) = {id} return node'.format(carries=CARRIES, identified=IDENTIFIED_BY, id=id), 'node')
+        for i in s:
+            return self.nodeToDict(i)
 
         
 

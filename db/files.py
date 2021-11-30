@@ -46,6 +46,7 @@ def uploadFile(request):
         res = Resource()
         res.source.save(file_d.name,  ContentFile(file_d.read()))
         res.name = name
+        res.resource_type = file_type
         # res.original_object_uri = object_uri
         res.save()
 
