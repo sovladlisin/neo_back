@@ -189,7 +189,23 @@ class Onthology:
 
         # that its mp4/audio etc.
         if file_type == 'mp4':
-            recource_type_uri = MP4
+            recource_type_uri = 'http://erlangen-crm.org/current/mp4'
+        if file_type == 'avi':
+            recource_type_uri = 'http://erlangen-crm.org/current/avi'
+        if file_type == 'mkv':
+            recource_type_uri = 'http://erlangen-crm.org/current/mkv'
+        if file_type == 'tiff':
+            recource_type_uri = 'http://erlangen-crm.org/current/tiff'
+        if file_type == 'png':
+            recource_type_uri = 'http://erlangen-crm.org/current/png'
+        if file_type == 'pdf':
+            recource_type_uri = 'http://erlangen-crm.org/current/pdf'
+        if file_type == 'jpeg':
+            recource_type_uri = 'http://erlangen-crm.org/current/jpeg'
+        if file_type == 'wav':
+            recource_type_uri = 'http://erlangen-crm.org/current/wav'
+        if file_type == 'txt':
+            recource_type_uri = 'http://erlangen-crm.org/current/txt'
 
         
         recource_type = self.driver.get_node_by_uri(recource_type_uri)
