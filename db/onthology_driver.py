@@ -205,7 +205,7 @@ class Onthology:
         # connect to resource
         self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
 
-        return True
+        return carrier
 
     def getObjectVisualItems(self,node_id):
         s = self.driver.custom_query(

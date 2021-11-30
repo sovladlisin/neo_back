@@ -20,23 +20,22 @@ password="pupil-flute-lunch-quarter-symbol-1816"
 def uploadFile(request):
     if request.method == 'POST':
 
-        token = request.headers.get('Token', None)
-        if token is None:
-            return HttpResponse(status=401)
-        user_l = authenticate_user(token)
-        if user_l is None:
-            return HttpResponse(status=401)
-        if user_l.is_admin == False:
-            return HttpResponse(status=401)
+        # token = request.headers.get('Token', None)
+        # if token is None:
+        #     return HttpResponse(status=401)
+        # user_l = authenticate_user(token)
+        # if user_l is None:
+        #     return HttpResponse(status=401)
+        # if user_l.is_admin == False:
+        #     return HttpResponse(status=401)
 
 
   
         file_d = request.FILES['file']
 
         name = request.GET.get('name','')
-        carrier_uri = request.GET.get('carrier_uri','')
-        type_uri = request.GET.get('type_uri','')
         object_id = request.GET.get('object_id','')
+        file_type = request.GET.get('file_type','')
 
         o = Onthology(uri,user, password)
 
@@ -47,17 +46,14 @@ def uploadFile(request):
         res = Resource()
         res.source.save(file_d.name,  ContentFile(file_d.read()))
         res.name = name
-        res.original_object_uri = object_uri
+        # res.original_object_uri = object_uri
         res.save()
 
         o = Onthology(uri,user, password)
 
-        r = o.createDigitalCarrier(res.pk, res.name, carrier_uri, type_uri,object_id)
-
-        # result = {}
-        # result['name'] = res.name
-        # result['source'] = res.source.url
-        # result['id'] = res.pk
+        r = o.connectDigitalToResource(file_type, res.id,name,object_node.id )
+        res.original_object_uri = object_uri['uri']
+        res.save()
 
         return JsonResponse(o.nodeToDict(r), safe=False)
     return HttpResponse(status=405)
