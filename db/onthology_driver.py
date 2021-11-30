@@ -95,6 +95,8 @@ class Onthology:
             value = node.get(param)
             if isinstance(value, time.DateTime):
                 pass
+            if isinstance(value, uuid.UUID):
+                result[param] = str(value)
             else:
                 result[param] = value
         return result
@@ -179,7 +181,7 @@ class Onthology:
         return carrier
 
     def connectDigitalToResource(self, file_type, file_id, file_name, resource_id):
-        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': uuid.uuid4()})
+        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': str(uuid.uuid4())})
 
         # that its digital
         carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
@@ -193,13 +195,13 @@ class Onthology:
         recource_type = self.driver.get_node_by_uri(recource_type_uri)
         self.driver.create_relation_forward(carrier.id,recource_type.id, [HAS_TYPE], {})
 
-        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: "{id}_{name}".format(id=file_id, name=file_name), 'uri': uuid.uuid4()})
+        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: "{id}_{name}".format(id=file_id, name=file_name), 'uri': str(uuid.uuid4())})
         appelation_class = self.driver.get_node_by_uri(APPELATION)
         self.driver.create_relation_forward(carrier.id,appelation_class.id, [RDF_TYPE], {})
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
         # create visual item
-        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri': uuid.uuid4()})
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  str(uuid.uuid4())})
         self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
 
         # connect to resource
