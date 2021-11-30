@@ -202,6 +202,8 @@ class Onthology:
             recource_type_uri = 'http://erlangen-crm.org/current/pdf'
         if file_type == 'jpeg':
             recource_type_uri = 'http://erlangen-crm.org/current/jpeg'
+        if file_type == 'jpg':
+            recource_type_uri = 'http://erlangen-crm.org/current/jpeg'
         if file_type == 'wav':
             recource_type_uri = 'http://erlangen-crm.org/current/wav'
         if file_type == 'txt':
