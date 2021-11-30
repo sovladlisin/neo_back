@@ -214,15 +214,18 @@ class Onthology:
         print(s)
         for i in s:
             node_uri = i[NOTE_URI]
-            r_id = node_uri.split('_')[0]
-            f = Resource.objects.get(pk=int(r_id))
-            temp = {}
-            temp['name'] = f.name
-            temp['source'] = f.source.url
-            temp['id'] = f.pk
-            response.append({
-                'file': temp
-            })
+            if '_' not in node_uri:
+                pass
+            else:
+                r_id = node_uri.split('_')[0]
+                f = Resource.objects.get(pk=int(r_id))
+                temp = {}
+                temp['name'] = f.name
+                temp['source'] = f.source.url
+                temp['id'] = f.pk
+                response.append({
+                    'file': temp
+                })
         return response
 
         
