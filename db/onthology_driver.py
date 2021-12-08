@@ -329,7 +329,7 @@ class Onthology:
             for t in res2:
                 texts.append(self.nodeToDict(t))
             temp['texts'] = texts
-
+            temp['resources'] = self.getObjectVisualItems(r.id)
             result.append(temp)
 
         return result
