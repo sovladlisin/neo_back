@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'db_file_storage',
     'db',
     'user_auth',
-    'rest_framework',
-    'db_file_storage',
+   
     # 'knox',
 ]
 
