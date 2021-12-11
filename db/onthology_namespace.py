@@ -28,7 +28,7 @@ IMAGE_TYPE = "http://erlangen-crm.org/current/F61_Image_Type"
 VIDEO_TYPE = "http://erlangen-crm.org/current/F58_Video_Type"
 
 MP4 = 'http://erlangen-crm.org/current/mp4'
-
+TITLE = 'http://dbpedia.org/ontology/title'
 # PROPERTY
 # (class) <- [pr_Rel] - (new_type) - [pr_Range] -> (type)
 PROPERTY_DOMAIN = "http://www.w3.org/2000/01/rdf-schema#domain"

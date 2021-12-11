@@ -234,7 +234,7 @@ class Onthology:
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
         # create visual item
-        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), 'name': file_name, NOTE_URI: note})
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), TITLE: file_name, NOTE_URI: note})
         self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
 
         # connect to resource
