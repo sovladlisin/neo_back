@@ -190,11 +190,9 @@ class Onthology:
                 if m:
                     m['resources'] = self.getMediaVisualItems(m['id'])
             res['media_carrier'] = self.getMediaVisualItems(res['resource']['id'])
-            res['resource']['media_carrier2'] = ['ddd']
             res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
 
-        for res in data:
-            print(res, '\n\n')
+
         return data
 
     def getResourceCorpus(self, node_id):
