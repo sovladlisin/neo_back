@@ -190,7 +190,7 @@ class Onthology:
                 if m:
                     m['resources'] = self.getMediaVisualItems(m['id'])
         r = data['resource']
-        r['resources'] = self.getMediaVisualItems(r['id'])
+        r['media-carrier'] = self.getMediaVisualItems(r['id'])
         data['resource'] = r
         return data
 
