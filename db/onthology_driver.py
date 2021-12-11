@@ -192,6 +192,7 @@ class Onthology:
             r = res['resource']
             r['media_carrier'] = self.getMediaVisualItems(r['id'])
             res['resource'] = r
+            print(res)
             res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
         return data
 
@@ -234,7 +235,7 @@ class Onthology:
         recource_type = self.driver.get_node_by_uri(recource_type_uri)
         self.driver.create_relation_forward(carrier.id,recource_type.id, [HAS_TYPE], {})
 
-        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: note, 'uri': self.getRandomUri() + "{name}-{id}".format(id=file_id, name=file_name)})
+        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: note, 'uri': self.getRandomUri() + "-{id}".format(id=file_id)})
         appelation_class = self.driver.get_node_by_uri(APPELATION)
         self.driver.create_relation_forward(carrier.id,appelation_class.id, [RDF_TYPE], {})
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
