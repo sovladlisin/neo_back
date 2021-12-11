@@ -195,6 +195,12 @@ class Onthology:
             res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
         return data
 
+    def getResourceCorpus(self, node_id):
+        query = "MATCH (node) - [:`{inc}`] -> (n) where ID(n) = {node_id} RETURN node".format(inc=CORPUS_RELATION, node_id=node_id)
+        r = self.driver.custom_query(query, 'node')
+        for item in r:
+            return item.id
+
     def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
         carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: note})
 
@@ -246,6 +252,9 @@ class Onthology:
         else:
             self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
 
+        # incorporate to corpus
+        corpsus_id = self.getResourceCorpus(resource_id)
+        self.driver.create_relation_forward(corpsus_id,visual_item.id, [CORPUS_RELATION], {})
 
 
 
