@@ -189,9 +189,7 @@ class Onthology:
             for m in res['media']:
                 if m:
                     m['resources'] = self.getMediaVisualItems(m['id'])
-            r = res['resource']
-            r['media_carrier'] = self.getMediaVisualItems(r['id'])
-            res['resource'] = r
+            res['resource']['media_carrier'] = self.getMediaVisualItems(res['resource']['id'])
             print(res)
             res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
         return data
