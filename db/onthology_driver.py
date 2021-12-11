@@ -186,8 +186,7 @@ class Onthology:
     def getCorpusResources(self, corpus_uri):
         data = self.driver.getResources(corpus_uri)
         for res in data:
-            media = res['media']
-            for m in media:
+            for m in res['media']:
                 if m:
                     m['resources'] = self.getMediaVisualItems(m['id'])
        
