@@ -143,6 +143,7 @@ class NeoApp:
                 temp['events'] = []
         
                 for node1 in record['media']:
+                    print('MEDIA ORIGIN:::', self.nodeToDict(node1))
                     temp['media'].append(self.nodeToDict(node1))
                 for node2 in record['genres']:
                     temp['genres'].append(self.nodeToDict(node2))
