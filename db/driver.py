@@ -142,18 +142,18 @@ class NeoApp:
                 temp['lang'] = self.nodeToDict(record['lang'])
                 temp['events'] = []
         
-                for node in record['media']:
-                    temp['media'].append(self.nodeToDict(node))
-                for node in record['genres']:
-                    temp['genres'].append(self.nodeToDict(node))
+                for node1 in record['media']:
+                    temp['media'].append(self.nodeToDict(node1))
+                for node2 in record['genres']:
+                    temp['genres'].append(self.nodeToDict(node2))
 
 
 
-                for node in record['events']:
+                for node3 in record['events']:
                     temp2 = {}
-                    temp2['actor'] = self.nodeToDict(node['actor'])
-                    temp2['role']= self.nodeToDict(node['role'])
-                    temp2['place']= self.nodeToDict(node['place'])
+                    temp2['actor'] = self.nodeToDict(node3['actor'])
+                    temp2['role']= self.nodeToDict(node3['role'])
+                    temp2['place']= self.nodeToDict(node3['place'])
                     temp['media'].append(temp2)
 
                 result.append(temp)
