@@ -20,7 +20,7 @@ PLACE_URI = "http://erlangen-crm.org/current/E53_Place"
 PERSON_URI = "http://erlangen-crm.org/current/E21_Person"
 DIGITAL_CARRIER_URI = "http://erlangen-crm.org/current/F23_Digital_Carrier"
 APPELATION = "http://erlangen-crm.org/current/E41_Appellation"
-
+DEPICTS = 'http://xmlns.com/foaf/0.1/depicts'
 # TYPES
 STRING = "http://www.w3.org/2000/01/rdf-schema#Literal"
 TEXT_TYPE = "http://erlangen-crm.org/current/F60_Text_Type"

@@ -36,6 +36,7 @@ def uploadFile(request):
         name = request.GET.get('name','')
         object_id = request.GET.get('object_id','')
         file_type = request.GET.get('file_type','')
+        note = request.GET.get('note','')
 
         o = Onthology(uri,user, password)
 
@@ -52,7 +53,7 @@ def uploadFile(request):
 
         o = Onthology(uri,user, password)
 
-        r = o.connectDigitalToResource(file_type, res.id,name,object_node.id )
+        r = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note )
         res.original_object_uri = r['uri']
         res.save()
 

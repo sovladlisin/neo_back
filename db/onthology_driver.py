@@ -159,7 +159,7 @@ class Onthology:
 
         return created_node
 
-    def  createDigitalCarrier(self, file_id, file_name, carrier_uri, type_uri, object_id):
+    def createDigitalCarrier(self, file_id, file_name, carrier_uri, type_uri, object_id):
         carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': carrier_uri})
 
         carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
@@ -167,7 +167,7 @@ class Onthology:
 
         appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: "{id}_{name}".format(id=file_id, name=file_name), 'uri': carrier_uri + '_Appellation'})
         appelation_class = self.driver.get_node_by_uri(APPELATION)
-        self.driver.create_relation_forward(carrier.id,appelation_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(appelation.id,appelation_class.id, [RDF_TYPE], {})
         
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
@@ -180,9 +180,13 @@ class Onthology:
 
         return carrier
 
-    def connectDigitalToResource(self, file_type, file_id, file_name, resource_id):
-        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': str(uuid.uuid4())})
+    def getRandomUri(self):
+        return 'http://erlangen-crm.org/current/' +  str(uuid.uuid4())
 
+        
+    def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
+        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri()})
+        
         # that its digital
         carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
         self.driver.create_relation_forward(carrier.id,carrier_class.id, [RDF_TYPE], {})
@@ -213,41 +217,53 @@ class Onthology:
         recource_type = self.driver.get_node_by_uri(recource_type_uri)
         self.driver.create_relation_forward(carrier.id,recource_type.id, [HAS_TYPE], {})
 
-        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: "{id}_{name}".format(id=file_id, name=file_name), 'uri': str(uuid.uuid4())})
+        appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], {NOTE_URI: note, 'uri': self.getRandomUri() + "{name}-{id}".format(id=file_id, name=file_name)})
         appelation_class = self.driver.get_node_by_uri(APPELATION)
         self.driver.create_relation_forward(carrier.id,appelation_class.id, [RDF_TYPE], {})
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
         # create visual item
-        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  str(uuid.uuid4()), 'name': file_name})
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), 'name': file_name})
         self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
 
         # connect to resource
-        self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
+
+        resource = self.getEntityById(resource_id)
+        resource = self.nodeToDict(resource)
+        if PERSON_URI in resource['labels']:
+            self.driver.create_relation_forward(visual_item.id,resource_id, [DEPICTS], {})
+        else:
+            self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
+
+
+
 
         return carrier
 
     def getObjectVisualItems(self,node_id):
         s = self.driver.custom_query(
-            'match (k) <- [:`{refers}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) where ID(k) = {id} return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY, id=node_id), 'node')
+            'match (k) <- [:`{refers}` | :`{depicts}`] - (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) where ID(k) = {id} return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY, id=node_id, depicts=DEPICTS), 'node')
         response = []
         for i in s:
-            node_uri = i[NOTE_URI]
-            if '_' not in node_uri:
+            node_uri = i['uri']
+            if '-' not in node_uri:
                 pass
             else:
 
-                r_id = node_uri.split('_')[0]
-                f = Resource.objects.get(pk=int(r_id))
-                temp = {}
-                temp['name'] = f.name
-                temp['source'] = f.source.url
-                temp['id'] = f.pk
-                temp['type'] = f.resource_type
-                response.append({
-                    'file': temp,
-                    'node': self.getVisualItemDesc(i.id)
-                })
+                r_id = node_uri.split('-')[-1]
+                try:
+                    f = Resource.objects.get(pk=int(r_id))
+                    temp = {}
+                    temp['name'] = f.name
+                    temp['source'] = f.source.url
+                    temp['id'] = f.pk
+                    temp['type'] = f.resource_type
+                    response.append({
+                        'file': temp,
+                        'node': self.getVisualItemDesc(i.id)
+                    })
+                except:
+                    pass
         return response
 
     def getVisualItemDesc(self, id):
@@ -326,10 +342,12 @@ class Onthology:
 
             temp = self.nodeToDict(r)
             texts = []
+            resources = []
             for t in res2:
                 texts.append(self.nodeToDict(t))
+                resources.append(self.getObjectVisualItems(t.id))
             temp['texts'] = texts
-            temp['resources'] = self.getObjectVisualItems(r.id)
+            temp['resources'] = resources
             result.append(temp)
 
         return result
