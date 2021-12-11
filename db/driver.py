@@ -3,6 +3,10 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 import json
 from operator import itemgetter
+import datetime
+from  neo4j import time
+
+import uuid
 
 class NeoApp:
 
@@ -98,6 +102,85 @@ class NeoApp:
         
         return result[0]
 
+    def getResources(self, corpus_uri):
+        def _service_func(tx,corpus_uri):
+            q = '''
+           match (:`http://erlangen-crm.org/current/F74_Corpus` {uri: 'AFDSHGTKCNGFKDOMDLFG'})-[:`http://erlangen-crm.org/current/P165_incorporates`]->(resource) where resource:`http://erlangen-crm.org/current/E33_Linguistic_Object` or resource:`http://erlangen-crm.org/current/E36_Visual_Item`
+
+            optional match (resource)<-[role]-(e:`http://erlangen-crm.org/current/F8_Preparing_to_publish`)
+            optional match (actor:`http://erlangen-crm.org/current/E21_Person`)<-[:`http://erlangen-crm.org/current/P14_carried_out_by`]-(e)
+            optional match (e)-[:`http://erlangen-crm.org/current/P7_took_place_at`]->(place:`http://erlangen-crm.org/current/E53_Place`)
+
+            with resource,actor,place,type(role) as role
+
+            optional match (op:`http://www.w3.org/2002/07/owl#ObjectProperty`) where op.uri=role
+            optional match (resource)<-[:`http://erlangen-crm.org/current/P67_refers_to`]-(media)
+            optional match (resource)-[:`http://erlangen-crm.org/current/P2_has_type`]->(genre:`http://erlangen-crm.org/current/F62_Genre`)
+            optional match (resource)-[:`http://erlangen-crm.org/current/P72_has_language`]->(lang:`http://erlangen-crm.org/current/E56_Language`)
+
+            with resource,media as media,genre as genres, lang,op as role,actor,place
+
+            with resource,media,genres,lang,role,actor,place
+
+            with resource,collect(media) as media,collect(genres) as genres,lang,case role when null then null else {
+                actor: actor,
+                role: role,
+                place: place
+            } end as event
+
+            return resource,media,genres,lang,collect(event) as events
+            '''.replace('AFDSHGTKCNGFKDOMDLFG',corpus_uri)
+            request = tx.run(q)
+
+            result = []
+            for record in request:
+           
+                temp = {}
+                temp['resource'] = self.nodeToDict(record['resource'])
+                temp['media'] = []
+                temp['genres'] = []
+                temp['lang'] = self.nodeToDict(record['lang'])
+                temp['events'] = []
+        
+                for node in record['media']:
+                    temp['media'].append(self.nodeToDict(node))
+                for node in record['genres']:
+                    temp['genres'].append(self.nodeToDict(node))
+
+
+
+                for node in record['events']:
+                    temp2 = {}
+                    temp2['actor'] = self.nodeToDict(node['actor'])
+                    temp2['role']= self.nodeToDict(node['role'])
+                    temp2['place']= self.nodeToDict(node['place'])
+                    temp['media'].append(temp2)
+
+                result.append(temp)
+
+            return result
+
+        with self.driver.session() as session:
+            result = session.write_transaction(_service_func,corpus_uri)
+        return result
+
+    def nodeToDict(self, node):
+        result = {}
+        print()
+        if node is None:
+            return None
+        result['id'] = node.id
+        result['labels'] = list(node.labels)
+        result['params'] = list(node.keys())
+        for param in node.keys():
+            value = node.get(param)
+            if isinstance(value, time.DateTime):
+                pass
+            if isinstance(value, uuid.UUID):
+                result[param] = str(value)
+            else:
+                result[param] = value
+        return result
 
     def collect_class(self, id):
         def _service_func(tx,id):

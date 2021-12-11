@@ -8,6 +8,7 @@ import datetime
 from django.db.models import Q
 from .onthology_driver import Onthology
 from.onthology_namespace import *
+from django.http import JsonResponse
 
 
 uri = 'bolt://infra.iis.nsk.su'
@@ -21,4 +22,10 @@ def getAllResources(request):
         
         return JsonResponse(res, safe=False)
     return HttpResponse('Wrong request')
+
+def getCorpusResources(request):
+    c_uri = request.GET.get('corpus_uri', '')
+    o = Onthology(uri,user, password)
+    res = o.getCorpusResources(c_uri)
+    return JsonResponse(res, safe=False)
 

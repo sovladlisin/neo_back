@@ -183,10 +183,18 @@ class Onthology:
     def getRandomUri(self):
         return 'http://erlangen-crm.org/current/' +  str(uuid.uuid4())
 
-        
+    def getCorpusResources(self, corpus_uri):
+        data = self.driver.getResources(corpus_uri)
+        for res in data:
+            media = res['media']
+            for m in media:
+                m['resource'] = self.getMediaVisualItems(m['id'])
+       
+        return data
+
     def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
-        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri()})
-        
+        carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: note})
+
         # that its digital
         carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
         self.driver.create_relation_forward(carrier.id,carrier_class.id, [RDF_TYPE], {})
@@ -261,6 +269,32 @@ class Onthology:
                     response.append({
                         'file': temp,
                         'node': self.getVisualItemDesc(i.id)
+                    })
+                except:
+                    pass
+        return response
+
+    def getMediaVisualItems(self,node_id):
+        s = self.driver.custom_query(
+            'match (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) where ID(g) = {id} return node'.format(refers=REFERS_TO, carries=CARRIES, identified=IDENTIFIED_BY, id=node_id, depicts=DEPICTS), 'node')
+        response = []
+        for i in s:
+            node_uri = i['uri']
+            if '-' not in node_uri:
+                pass
+            else:
+
+                r_id = node_uri.split('-')[-1]
+                try:
+                    f = Resource.objects.get(pk=int(r_id))
+                    temp = {}
+                    temp['name'] = f.name
+                    temp['source'] = f.source.url
+                    temp['id'] = f.pk
+                    temp['type'] = f.resource_type
+                    response.append({
+                        'file': temp,
+                        'node': None
                     })
                 except:
                     pass

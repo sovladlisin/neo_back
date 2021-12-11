@@ -5,7 +5,8 @@ from .corpuses import getCorpuses, getSubCorpuses
 from .files import changeComments,uploadFile,getFiles,deleteFile
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
 from .resources import (
-    getAllResources
+    getAllResources,
+    getCorpusResources
 )
 urlpatterns = [
     path('getDomainOntologies',getDomainOntologies , name='getDomainOntologies'),
@@ -61,6 +62,9 @@ urlpatterns = [
 
     path('updateIndex',updateIndex , name='updateIndex'),
     path('searchIndex',searchIndex , name='searchIndex'),
+
+    path('getCorpusResources',getCorpusResources , name='getCorpusResources'),
+
 
 
 ]
