@@ -189,9 +189,9 @@ class Onthology:
             for m in res['media']:
                 if m:
                     m['resources'] = self.getMediaVisualItems(m['id'])
-        r = data['resource']
-        r['media_carrier'] = self.getMediaVisualItems(r['id'])
-        data['resource'] = r
+            r = res['resource']
+            r['media_carrier'] = self.getMediaVisualItems(r['id'])
+            res['resource'] = r
         return data
 
     def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
