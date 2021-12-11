@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     # 'knox',
 ]
 
-AUTH_USER_MODEL = 'user_auth.Account'
+# AUTH_USER_MODEL = 'user_auth.Account'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
