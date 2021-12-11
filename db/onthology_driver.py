@@ -188,8 +188,9 @@ class Onthology:
         for res in data:
             media = res['media']
             for m in media:
-                print(m)
-                m['resource'] = self.getMediaVisualItems(m['id'])
+                if m:
+                    print(m)
+                    m['resources'] = self.getMediaVisualItems(m['id'])
        
         return data
 
