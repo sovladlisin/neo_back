@@ -143,7 +143,6 @@ class NeoApp:
                 temp['events'] = []
         
                 for node1 in record['media']:
-                    print('MEDIA ORIGIN:::', self.nodeToDict(node1))
                     temp['media'].append(self.nodeToDict(node1))
                 for node2 in record['genres']:
                     temp['genres'].append(self.nodeToDict(node2))
@@ -155,7 +154,7 @@ class NeoApp:
                     temp2['actor'] = self.nodeToDict(node3['actor'])
                     temp2['role']= self.nodeToDict(node3['role'])
                     temp2['place']= self.nodeToDict(node3['place'])
-                    temp['media'].append(temp2)
+                    temp['events'].append(temp2)
 
                 result.append(temp)
 

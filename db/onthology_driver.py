@@ -5,7 +5,7 @@ import datetime
 from  neo4j import time
 from .models import Resource
 import uuid
-
+from pprint import pprint
 class Onthology:
 
     def __init__(self, uri, user, password, domain = ''):
@@ -189,7 +189,6 @@ class Onthology:
             media = res['media']
             for m in media:
                 if m:
-                    print('MEDIA:::',m,'\n\n\n')
                     m['resources'] = self.getMediaVisualItems(m['id'])
        
         return data
