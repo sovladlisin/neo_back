@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls import url
 from .views import deleteOntology, searchIndex, updateIndex, getClassFullSignature, addEntity, getDomainOntologies, getAllClasses, getClasses,getClassObjects, addClassAttributeObject, updateEntity, getSubClasses, updateEntity,getClassObject,addClassAttribute, getClass,getClassesWithSignatures, getObjectsByClassUri
 from .corpuses import getCorpuses, getSubCorpuses
-from .files import changeComments,uploadFile,getFiles,deleteFile
+from .files import changeComments,uploadFile,deleteFile
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
 from .resources import (
     getAllResources,
@@ -37,7 +37,6 @@ urlpatterns = [
     path('getObjectsByClassUri',getObjectsByClassUri , name='getObjectsByClassUri'),
 
     path('uploadFile',uploadFile , name='uploadFile'),
-    path('getFiles',getFiles , name='getFiles'),
     path('deleteFile',deleteFile , name='deleteFile'),
     path('changeComments',changeComments , name='changeComments'),
 

@@ -14,24 +14,32 @@ uri = 'bolt://infra.iis.nsk.su'
 user="neo4j"
 password="pupil-flute-lunch-quarter-symbol-1816"
 
+
+# API IMPORTS
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
+
+@api_view(['GET', ])
+@permission_classes((AllowAny,))
 def getCorpuses(request):
-    if request.method == "GET":
-        o = Onthology(uri,user, password)
-        res = o.getCorpuses()
-        
-        return JsonResponse(res, safe=False)
-    return HttpResponse('Wrong request')
+    o = Onthology(uri,user, password)
+    res = o.getCorpuses()
+    
+    return JsonResponse(res, safe=False)
 
+
+@api_view(['GET', ])
+@permission_classes((AllowAny,))
 def getSubCorpuses(request):
-    if request.method == "GET":
-        id = request.GET.get('id', None)
-        if id is None:
-            return HttpResponse(status=404)
+    id = request.GET.get('id', None)
+    if id is None:
+        return HttpResponse(status=404)
 
-        o = Onthology(uri,user, password)
-        res = o.getSubCorpuses(id)
-        result = []
-        for node in res:
-            result.append(o.nodeToDict(node))
-        return JsonResponse(result, safe=False)
-    return HttpResponse('Wrong request')
+    o = Onthology(uri,user, password)
+    res = o.getSubCorpuses(id)
+    result = []
+    for node in res:
+        result.append(o.nodeToDict(node))
+    return JsonResponse(result, safe=False)

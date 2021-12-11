@@ -1,10 +1,11 @@
 from django.urls import path
 from django.conf.urls import url
-from .views import login, register, setUserPermissions, getUsers
+from .views import (
+    registration_view,
+    login_view
+)
 
 urlpatterns = [
-    path('login',login , name='login'),
-    path('register',register , name='register'),
-    path('setUserPermissions',setUserPermissions , name='setUserPermissions'),
-    path('getUsers',getUsers , name='getUsers'),
+    path('register', registration_view, name="register"),
+    path('login', login_view, name="login"),
 ]

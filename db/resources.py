@@ -15,14 +15,22 @@ uri = 'bolt://infra.iis.nsk.su'
 user="neo4j"
 password="pupil-flute-lunch-quarter-symbol-1816"
 
-def getAllResources(request):
-    if request.method == "GET":
-        o = Onthology(uri,user, password)
-        res = o.getResources()
-        
-        return JsonResponse(res, safe=False)
-    return HttpResponse('Wrong request')
 
+# API IMPORTS
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
+@api_view(['GET', ])
+@permission_classes((AllowAny,))
+def getAllResources(request):
+    o = Onthology(uri,user, password)
+    res = o.getResources()
+    
+    return JsonResponse(res, safe=False)
+
+@api_view(['GET', ])
+@permission_classes((AllowAny,))
 def getCorpusResources(request):
     c_uri = request.GET.get('corpus_uri', '')
     o = Onthology(uri,user, password)

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from user_auth.models import Account
+
 class File(models.Model):
     bytes = models.TextField()
     filename = models.CharField(max_length=255)
@@ -14,7 +16,7 @@ class Resource(models.Model):
 
 class Markup(models.Model):
     user = models.ForeignKey(
-        User, blank=False, null=True, related_name='markup_owner', on_delete=models.CASCADE)
+        Account, blank=False, null=True, related_name='markup_owner', on_delete=models.CASCADE)
     name = models.CharField(default='Не указано', max_length=500)
     original_object_uri = models.CharField(default='', max_length=1000)
     ontology_uri = models.CharField(default='', max_length=1000)
