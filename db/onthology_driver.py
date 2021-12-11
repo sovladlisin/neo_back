@@ -308,7 +308,6 @@ class Onthology:
                     temp['type'] = f.resource_type
                     response.append({
                         'file': temp,
-                        'node': None
                     })
                 except:
                     pass
