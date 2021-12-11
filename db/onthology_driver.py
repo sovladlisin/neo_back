@@ -3,7 +3,7 @@ from .onthology_namespace import *
 import json
 import datetime
 from  neo4j import time
-from .models import Resource
+from .models import Resource, Markup
 import uuid
 from pprint import pprint
 class Onthology:
@@ -192,6 +192,7 @@ class Onthology:
             r = res['resource']
             r['media_carrier'] = self.getMediaVisualItems(r['id'])
             res['resource'] = r
+            res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
         return data
 
     def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
@@ -233,7 +234,7 @@ class Onthology:
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
         # create visual item
-        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), 'name': file_name})
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), 'name': file_name, NOTE_URI: note})
         self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
 
         # connect to resource
