@@ -6,6 +6,7 @@ from  neo4j import time
 from .models import Resource, Markup
 import uuid
 from pprint import pprint
+from datetime import date, datetime
 class Onthology:
 
     def __init__(self, uri, user, password, domain = ''):
@@ -88,6 +89,7 @@ class Onthology:
         result = {}
         if node is None:
             return None
+        print(node)
         result['id'] = node.id
         result['labels'] = list(node.labels)
         result['params'] = list(node.keys())
@@ -95,7 +97,7 @@ class Onthology:
             value = node.get(param)
             if isinstance(value, time.DateTime):
                 pass
-            if isinstance(value, uuid.UUID):
+            elif isinstance(value, uuid.UUID):
                 result[param] = str(value)
             else:
                 result[param] = value
@@ -249,16 +251,132 @@ class Onthology:
         resource = self.nodeToDict(resource)
         if PERSON_URI in resource['labels']:
             self.driver.create_relation_forward(visual_item.id,resource_id, [DEPICTS], {})
+        elif CORPUS in resource['labels']:
+            self.driver.create_relation_forward(resource_id,visual_item.id, [CORPUS_RELATION], {})
+       
         else:
             self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
-
+        
         # incorporate to corpus
         corpsus_id = self.getResourceCorpus(resource_id)
         self.driver.create_relation_forward(corpsus_id,visual_item.id, [CORPUS_RELATION], {})
 
 
-
         return carrier
+
+    def createText(self, new_node, corpus_id, origin_r_id, trans_r_id, commentary_r_id):
+        props = {}
+        obj_props = {}
+        for param in new_node:
+            if isinstance(new_node[param], dict):
+                obj_props[param] = new_node[param]
+            else: 
+                props[param] = new_node[param]
+        props['uri'] = self.getRandomUri()
+        created_node = self.driver.create_node(['Resource', LING_OBJECT], props)
+
+
+        for key in obj_props:
+            rel = obj_props[key]
+            if (rel['direction'] == 1):
+                if rel['object'] is not None:
+                    self.driver.create_relation_forward(created_node.id, rel['object']['id'], [key], {})
+            if (rel['direction'] == 0):
+                if rel['object'] is not None:
+                    self.driver.create_relation_forward( rel['object']['id'],created_node.id, [key], {})
+
+        origin_node = created_node
+        transaltion_node = self.driver.create_node(['Resource', LING_OBJECT, OBJECT], {'uri': self.getRandomUri()})
+        commentary_node = self.driver.create_node(['Resource', LING_OBJECT, OBJECT], {'uri': self.getRandomUri()})
+
+        # create carriers
+        carrier_class = self.driver.get_node_by_uri(DIGITAL_CARRIER_URI)
+
+        origin_carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri()})
+        self.driver.create_relation_forward(origin_carrier.id,carrier_class.id, [RDF_TYPE], {})
+        transaltion_carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri()})
+        self.driver.create_relation_forward(transaltion_carrier.id,carrier_class.id, [RDF_TYPE], {})
+        commentary_carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri()})
+        self.driver.create_relation_forward(commentary_carrier.id,carrier_class.id, [RDF_TYPE], {})
+
+
+        recource_type = self.driver.get_node_by_uri('http://erlangen-crm.org/current/txt')
+        self.driver.create_relation_forward(origin_carrier.id,recource_type.id, [HAS_TYPE], {})
+        self.driver.create_relation_forward(transaltion_carrier.id,recource_type.id, [HAS_TYPE], {})
+        self.driver.create_relation_forward(commentary_carrier.id,recource_type.id, [HAS_TYPE], {})
+
+        # connect carriers
+
+        self.driver.create_relation_forward(origin_carrier.id,origin_node.id, [CARRIES], {})
+        self.driver.create_relation_forward(transaltion_carrier.id,transaltion_node.id, [CARRIES], {})
+        self.driver.create_relation_forward(commentary_carrier.id,commentary_node.id, [CARRIES], {})
+
+
+        # create appelations
+        origin_appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], { 'uri': self.getRandomUri() + "-{id}".format(id=origin_r_id)})
+        translation_appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], { 'uri': self.getRandomUri() + "-{id}".format(id=trans_r_id)})
+        commentary_appelation = self.driver.create_node(['Resource', APPELATION, OBJECT], { 'uri': self.getRandomUri() + "-{id}".format(id=commentary_r_id)})
+
+        appelation_class = self.driver.get_node_by_uri(APPELATION)
+        
+        self.driver.create_relation_forward(origin_appelation.id,appelation_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(translation_appelation.id,appelation_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(commentary_appelation.id,appelation_class.id, [RDF_TYPE], {})
+
+        # connect appelations
+
+        self.driver.create_relation_forward(origin_carrier.id,origin_appelation.id, [IDENTIFIED_BY], {})
+        self.driver.create_relation_forward(transaltion_carrier.id,translation_appelation.id, [IDENTIFIED_BY], {})
+        self.driver.create_relation_forward(commentary_carrier.id,commentary_appelation.id, [IDENTIFIED_BY], {})
+
+        # connect origin + trans + commentary
+        self.driver.create_relation_forward(origin_node.id,transaltion_node.id, [HAS_TRANSLATION], {})
+        self.driver.create_relation_forward(origin_node.id,commentary_node.id, [HAS_COMMENTARY], {})
+
+
+        # incorporate to corpus
+        self.driver.create_relation_forward(corpus_id,origin_node.id, [CORPUS_RELATION], {})
+
+        print(origin_node)
+        origin_node = self.nodeToDict(origin_node)
+        transaltion_node = self.nodeToDict(transaltion_node)
+        commentary_node = self.nodeToDict(commentary_node)
+        return origin_node['uri'], transaltion_node['uri'], commentary_node['uri']
+
+    def createEvent(self, actor_id, place_id, time_string,label):
+        event_class = self.driver.get_node_by_uri(EVENT)
+        appelation_class = self.driver.get_node_by_uri(APPELATION)
+        time_class = self.driver.get_node_by_uri(TIME)
+        object_class = self.driver.get_node_by_uri(OBJECT)
+
+        created_event = self.driver.create_node(['Resource', EVENT, OBJECT], {'uri': self.getRandomUri(), LABEL: label})
+        self.driver.create_relation_forward(created_event.id,event_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(created_event.id,object_class.id, [RDF_TYPE], {})
+
+        self.driver.create_relation_forward(created_event.id,actor_id, [EVENT_PERMORMED_BY], {})
+        self.driver.create_relation_forward(created_event.id,place_id, [EVENT_TOOK_PLACE], {})
+
+        created_time = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri()})
+        self.driver.create_relation_forward(created_time.id,time_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(created_time.id,object_class.id, [RDF_TYPE], {})
+
+
+
+        created_time_appelation = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: time_string})
+        self.driver.create_relation_forward(created_time_appelation.id,appelation_class.id, [RDF_TYPE], {})
+        self.driver.create_relation_forward(created_time_appelation.id,object_class.id, [RDF_TYPE], {})
+
+        self.driver.create_relation_forward(created_event.id,created_time.id, [TIME_RELATION], {})
+
+
+        self.driver.create_relation_forward(created_time.id,created_time_appelation.id, [IDENTIFIED_BY], {})
+
+        return True
+
+    
+
+
+        
 
     def getObjectVisualItems(self,node_id):
         s = self.driver.custom_query(

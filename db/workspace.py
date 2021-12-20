@@ -40,6 +40,19 @@ def getWorkspace(request):
     origin_url = origin_text_obj.source.url
     translation_url = translation_text_obj.source.url
     commentary_url = commentary_text_obj.source.url
+
+    node, signature, attributes, attributes_obj, resources = o.getClassObject(origin_node.id)
+
+    obj = o.nodeToDict(node)
+    attrs = []
+    attrs_obj = []
+    # for a in attributes:
+    #     attrs.append(o.nodeToDict(a))
+    for a in attributes_obj:
+        attrs_obj.append( o.relToDict(a))
+
+    origin_node_extended = {'node': obj, 'relations' : attrs_obj }
+
     
     resources = o.getObjectVisualItems(origin_node.id)
     result = {
@@ -49,7 +62,8 @@ def getWorkspace(request):
         "translation_node":translation_node_dict,
         "commentary_node": commentary_node_dict,
         "commentary_url": commentary_url,
-        'resources': resources
+        'resources': resources,
+        'origin_node_extended': origin_node_extended
     }
 
     return JsonResponse(result, safe=False)
@@ -66,7 +80,7 @@ def getMarkups(request):
 
     for m in Markup.objects.filter(original_object_uri=original_object_uri):
         temp = model_to_dict(m)
-        temp['user'] = {"id": m.user.pk, "username": m.user.username}
+        temp['user'] = {"id": m.account.pk, "username": m.account.username}
         temp['ontology'] = o.nodeToDict(o.getEntityByUri(m.ontology_uri))
         result.append(temp)
 
@@ -85,11 +99,11 @@ def addMarkup(request):
     original_object_uri = data.get('original_object_uri', '')
     ontology_uri = data.get('ontology_uri', '')
 
-    new_markup = Markup(name=name, original_object_uri=original_object_uri, ontology_uri=ontology_uri, user=user)
+    new_markup = Markup(name=name, original_object_uri=original_object_uri, ontology_uri=ontology_uri, account=user)
     new_markup.save()
 
     result = model_to_dict(new_markup)
-    result['user'] = {"id": new_markup.user.pk, "username": new_markup.user.username}
+    result['user'] = {"id": new_markup.account.pk, "username": new_markup.account.email}
     result['ontology'] = o.nodeToDict(o.getEntityByUri(new_markup.ontology_uri))
 
     return JsonResponse(result, safe=False)

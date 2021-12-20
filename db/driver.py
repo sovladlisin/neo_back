@@ -129,7 +129,12 @@ class NeoApp:
             } end as event
 
             return resource,media,genres,lang,collect(event) as events
-            '''.replace('AFDSHGTKCNGFKDOMDLFG',corpus_uri)
+            '''
+            if len(corpus_uri) == 0:
+                q = q.replace("{uri: 'AFDSHGTKCNGFKDOMDLFG'}","")
+            else:
+                q = q.replace('AFDSHGTKCNGFKDOMDLFG',corpus_uri)
+
             request = tx.run(q)
 
             result = []
@@ -435,7 +440,7 @@ class NeoApp:
     
     def delete_node_by_ID(self, id):
         def _service_func(tx, id):
-            data = self.transform_props(props)
+            # data = self.transform_props(props)
             query = "MATCH (n) WHERE ID(n) = {id} DETACH DELETE n".format(id=id)
             request = tx.run(query)
             return True

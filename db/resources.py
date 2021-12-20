@@ -1,3 +1,4 @@
+from time import time
 from django.shortcuts import render
 from django.http import StreamingHttpResponse, HttpResponseRedirect, HttpResponse
 from django.forms.models import model_to_dict
@@ -36,4 +37,21 @@ def getCorpusResources(request):
     o = Onthology(uri,user, password)
     res = o.getCorpusResources(c_uri)
     return JsonResponse(res, safe=False)
+
+@api_view(['POST', ])
+@permission_classes((AllowAny,))
+def createEvent(request):
+    data = json.loads(request.body.decode('utf-8'))
+    actor_id = data.get('actor_id', None)
+    place_id = data.get('place_id', None)
+    time_string = data.get('time_string', None)
+    label = data.get('label', None)
+
+    if None in [actor_id, place_id, time_string,label]:
+        return HttpResponse(status=403)
+
+
+    o = Onthology(uri,user, password)
+    res = o.createEvent(actor_id, place_id, time_string,label)
+    return HttpResponse(status=200)
 

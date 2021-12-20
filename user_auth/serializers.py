@@ -45,7 +45,7 @@ class LoginSerializer(serializers.ModelSerializer):
         }
 
     def authenticate(self):
-
+        print(self.validated_data)
         accounts = Account.objects.all().filter(
             email=self.validated_data['username'])
         if accounts.count() == 0:

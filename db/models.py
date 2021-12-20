@@ -15,8 +15,8 @@ class Resource(models.Model):
     resource_type = models.CharField(default='', max_length=300)
 
 class Markup(models.Model):
-    # account = models.ForeignKey(
-    #     Account, blank=False, null=True, related_name='markup_account', on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        Account, blank=False, null=True, related_name='markup_account', on_delete=models.CASCADE)
     name = models.CharField(default='Не указано', max_length=500)
     original_object_uri = models.CharField(default='', max_length=1000)
     ontology_uri = models.CharField(default='', max_length=1000)

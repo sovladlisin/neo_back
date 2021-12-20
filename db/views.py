@@ -261,7 +261,7 @@ def getObjectsByClassUri(request):
     for r in res:
         temp = o.nodeToDict(r)
         result.append(o.nodeToDict(r))
-    return JsonResponse({'objects': result}, safe=False)
+    return Response({'objects': result})
 
 # @csrf_exempt
 # def updateEntity(request):

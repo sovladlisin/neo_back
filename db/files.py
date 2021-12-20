@@ -20,6 +20,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+
+from docx import Document
+
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated,))
 def uploadFile(request):
@@ -84,3 +87,191 @@ def changeComments(request):
     resource_texts.source.save(
         'commentary_' + str(resource_texts.pk) + '.txt', commentary)
     return HttpResponse(status=200)
+
+
+@api_view(['POST', ])
+@permission_classes((IsAuthenticated,))
+def uploadDocxFirstTable(request):
+    file_d = request.FILES['file']
+    name = str(datetime.datetime.now().time())[:8]
+    if file_d is None:
+        return HttpResponse(status=403)
+    docx_file = Document(file_d)
+    tables = docx_file.tables
+    info_table = tables[0]
+
+    response = {}
+
+    # название
+    response['title'] = info_table.rows[0].cells[1].text if len(info_table.rows[0].cells[1].text) != 0 else ''
+
+    # название на национальном языке
+    response['lang_origin'] = info_table.rows[1].cells[1].text if len(info_table.rows[1].cells[1].text) != 0 else ''
+
+    # язык
+    response['lang'] = info_table.rows[2].cells[1].text if len(info_table.rows[2].cells[1].text) != 0 else ''
+
+    # диалект
+    response['dialect'] = info_table.rows[3].cells[1].text if len(info_table.rows[3].cells[1].text) != 0 else ''
+
+    # говор
+    response['speech'] = info_table.rows[4].cells[1].text if len(info_table.rows[4].cells[1].text) != 0 else ''
+
+    # жанр
+    response['genre'] = info_table.rows[5].cells[1].text if len(info_table.rows[5].cells[1].text) != 0 else ''
+
+    # обряд
+    response['obr'] = info_table.rows[6].cells[1].text if len(info_table.rows[6].cells[1].text) != 0 else ''
+
+    # время записи
+    response['time'] = info_table.rows[7].cells[1].text if len(info_table.rows[7].cells[1].text) != 0 else ''
+
+    # место записи
+    response['place'] = info_table.rows[8].cells[1].text if len(info_table.rows[8].cells[1].text) != 0 else ''
+
+    # исполнитель
+    response['permormed_by'] = info_table.rows[9].cells[1].text if len(info_table.rows[9].cells[1].text) != 0 else ''
+
+    # собиратель
+    response['collected_by'] = info_table.rows[10].cells[1].text if len(info_table.rows[10].cells[1].text) != 0 else ''
+
+    # расшифровка аудиозаписи
+    response['decrypted_by'] = info_table.rows[11].cells[1].text if len(info_table.rows[11].cells[1].text) != 0 else ''
+
+    # нотирование
+    response['notation_by'] = info_table.rows[12].cells[1].text if len(info_table.rows[12].cells[1].text) != 0 else ''
+
+    # перевод на русский язык
+    response['transalted_by'] = info_table.rows[13].cells[1].text if len(info_table.rows[13].cells[1].text) != 0 else ''
+
+    # редактор перевода
+    response['editor'] = info_table.rows[14].cells[1].text if len(info_table.rows[14].cells[1].text) != 0 else ''
+
+    # редактор национального текста
+    response['redactor'] = info_table.rows[15].cells[1].text if len(info_table.rows[15].cells[1].text) != 0 else ''
+
+    # подготовка клмментариев
+    response['commantator'] = info_table.rows[16].cells[1].text if len(info_table.rows[16].cells[1].text) != 0 else ''
+
+    # опубликовано
+    response['published'] = info_table.rows[17].cells[1].text if len(info_table.rows[17].cells[1].text) != 0 else ''
+
+    # место хранения
+    response['place_storage'] = info_table.rows[18].cells[1].text if len(info_table.rows[18].cells[1].text) != 0 else ''
+
+    # варианты
+    response['variants'] = info_table.rows[19].cells[1].text if len(info_table.rows[19].cells[1].text) != 0 else ''
+
+    # дополнительная иформация
+    response['note'] = info_table.rows[20].cells[1].text if len(info_table.rows[20].cells[1].text) != 0 else ''
+
+    return Response(response)
+    main_table = tables[1]
+
+    temp = ''
+    original = ContentFile(b'')
+    translation = ContentFile(b'')
+    commentary = ContentFile(b'')
+
+    for cell in main_table.columns[0].cells:
+        temp = cell.text + '\n'
+        original.write(temp.encode('utf-8'))
+
+    for cell in main_table.columns[1].cells:
+        temp = cell.text + '\n'
+        translation.write(temp.encode('utf-8'))
+
+    for cell in main_table.columns[2].cells:
+        temp = cell.text + '\n'
+        commentary.write(temp.encode('utf-8'))
+
+
+    original_r = Resource()
+    original_r.source.save('original_' + name,  original)
+
+    trans_r = Resource()
+    trans_r.source.save('translation_' + name,  translation)
+
+    comment_r = Resource()
+    comment_r.source.save('comment_' + name,  commentary)
+
+
+
+
+    original_r.save()
+    trans_r.save()
+    comment_r.save()
+
+
+    return HttpResponse(status=200)
+
+@api_view(['POST', ])
+@permission_classes((IsAuthenticated,))
+def uploadDocx(request):
+    file_d = request.FILES['file']
+    data = request.data['data']
+    data = json.loads(data)
+    
+    
+    node = data['node']
+    corpus_id = data['corpus_id']
+
+
+
+
+    name = str(datetime.datetime.now().time())[:8]
+    if file_d is None:
+        return HttpResponse(status=403)
+    docx_file = Document(file_d)
+    tables = docx_file.tables
+    main_table = tables[1]
+
+    temp = ''
+    original = ContentFile(b'')
+    translation = ContentFile(b'')
+    commentary = ContentFile(b'')
+
+    for cell in main_table.columns[0].cells:
+        temp = cell.text + '\n'
+        original.write(temp.encode('utf-8'))
+
+    for cell in main_table.columns[1].cells:
+        temp = cell.text + '\n'
+        translation.write(temp.encode('utf-8'))
+
+    for cell in main_table.columns[2].cells:
+        temp = cell.text + '\n'
+        commentary.write(temp.encode('utf-8'))
+
+    original_r = Resource()
+    original_r.source.save('original_' + name,  original)
+
+    trans_r = Resource()
+    trans_r.source.save('translation_' + name,  translation)
+
+    comment_r = Resource()
+    comment_r.source.save('comment_' + name,  commentary)
+
+    o = Onthology(uri,user, password)
+    origin_node_uri, transaltion_node_uri, commentary_node_uri = o.createText(node, corpus_id, original_r.pk, trans_r.pk, comment_r.pk)
+
+    original_r.name = 'original_' + name
+    original_r.original_object_uri = origin_node_uri
+    original_r.resource_type = 'text'
+
+    trans_r.name = 'translation_' + name
+    trans_r.original_object_uri = transaltion_node_uri
+    trans_r.resource_type = 'text'
+
+    comment_r.name = 'comment_' + name
+    comment_r.original_object_uri = commentary_node_uri
+    comment_r.resource_type = 'text'
+
+
+    original_r.save()
+    trans_r.save()
+    comment_r.save()
+
+    
+    # print('IDIDIDIDIDI:', created_node.id)
+    return Response()

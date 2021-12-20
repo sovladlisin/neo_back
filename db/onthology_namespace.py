@@ -54,3 +54,9 @@ LANGUAGE = "http://erlangen-crm.org/current/E56_Language"
 GENRE = "http://erlangen-crm.org/current/F62_Genre"
 
 REFERS_TO = 'http://erlangen-crm.org/current/P67_refers_to'
+
+EVENT = 'http://erlangen-crm.org/current/F8_Preparing_to_publish'
+TIME = 'http://erlangen-crm.org/current/E52_Time-Span'
+TIME_RELATION = 'http://erlangen-crm.org/current/P4_has_time-span'
+EVENT_PERMORMED_BY = 'http://erlangen-crm.org/current/P14_carried_out_by'
+EVENT_TOOK_PLACE = 'http://erlangen-crm.org/current/P7_took_place_at'

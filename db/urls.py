@@ -2,11 +2,12 @@ from django.urls import path
 from django.conf.urls import url
 from .views import deleteOntology, searchIndex, updateIndex, getClassFullSignature, addEntity, getDomainOntologies, getAllClasses, getClasses,getClassObjects, addClassAttributeObject, updateEntity, getSubClasses, updateEntity,getClassObject,addClassAttribute, getClass,getClassesWithSignatures, getObjectsByClassUri
 from .corpuses import getCorpuses, getSubCorpuses
-from .files import changeComments,uploadFile,deleteFile
+from .files import changeComments,uploadFile,deleteFile,uploadDocxFirstTable, uploadDocx
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
 from .resources import (
     getAllResources,
-    getCorpusResources
+    getCorpusResources,
+    createEvent
 )
 urlpatterns = [
     path('getDomainOntologies',getDomainOntologies , name='getDomainOntologies'),
@@ -22,6 +23,7 @@ urlpatterns = [
 
     path('updateEntity',updateEntity , name='updateEntity'),
     path('addEntity',addEntity , name='addEntity'),
+    path('createEvent',createEvent , name='createEvent'),
 
 
     path('getClassObject',getClassObject , name='getClassObject'),
@@ -37,8 +39,13 @@ urlpatterns = [
     path('getObjectsByClassUri',getObjectsByClassUri , name='getObjectsByClassUri'),
 
     path('uploadFile',uploadFile , name='uploadFile'),
+    path('uploadDocxFirstTable',uploadDocxFirstTable , name='uploadDocxFirstTable'),
+    path('uploadDocx',uploadDocx , name='uploadDocx'),
+
+    
     path('deleteFile',deleteFile , name='deleteFile'),
     path('changeComments',changeComments , name='changeComments'),
+    
 
     path('getWorkspace',getWorkspace , name='getWorkspace'),
 

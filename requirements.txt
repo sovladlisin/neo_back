@@ -12,7 +12,7 @@ isort==4.3.21
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
 psycopg2>=2.8,<2.9
-
+python-docx
 mccabe==0.6.1
 mock==3.0.5
 multidict==4.5.2
@@ -20,7 +20,6 @@ pycodestyle
 pylint==2.4.3
 pylint-django==2.0.12
 pylint-plugin-utils==0.6
-python-docx==0.8.10
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
