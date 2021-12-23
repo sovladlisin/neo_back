@@ -1,6 +1,6 @@
 from django.urls import path
 from django.conf.urls import url
-from .views import deleteOntology, searchIndex, updateIndex, getClassFullSignature, addEntity, getDomainOntologies, getAllClasses, getClasses,getClassObjects, addClassAttributeObject, updateEntity, getSubClasses, updateEntity,getClassObject,addClassAttribute, getClass,getClassesWithSignatures, getObjectsByClassUri
+from .views import deleteEntity, deleteOntology, searchIndex, updateIndex, getClassFullSignature, addEntity, getDomainOntologies, getAllClasses, getClasses,getClassObjects, addClassAttributeObject, updateEntity, getSubClasses, updateEntity,getClassObject,addClassAttribute, getClass,getClassesWithSignatures, getObjectsByClassUri
 from .corpuses import getCorpuses, getSubCorpuses
 from .files import changeComments,uploadFile,deleteFile,uploadDocxFirstTable, uploadDocx
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
@@ -24,6 +24,7 @@ urlpatterns = [
     path('updateEntity',updateEntity , name='updateEntity'),
     path('addEntity',addEntity , name='addEntity'),
     path('createEvent',createEvent , name='createEvent'),
+    path('deleteEntity',deleteEntity , name='deleteEntity'),
 
 
     path('getClassObject',getClassObject , name='getClassObject'),

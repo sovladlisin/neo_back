@@ -311,10 +311,10 @@ def deleteEntity(request):
             
     id = request.GET.get('id', None)
     if id is None:
-        return HttpResponse(status=404)
+        return HttpResponse(status=403)
 
     o = Onthology(uri,user, password)
-    node = o.deleteEntity(id)
+    node = o.deleteObject(id)
     return JsonResponse({"result": True}, safe=False)
 
 

@@ -1,4 +1,4 @@
-from db.onthology_namespace import PROPERTY_DOMAIN, PROPERTY_LABEL, PROPERTY_LABEL_OBJECT, PROPERTY_RANGE, SUB_CLASS
+from db.onthology_namespace import CARRIES, IDENTIFIED_BY, PROPERTY_DOMAIN, PROPERTY_LABEL, PROPERTY_LABEL_OBJECT, PROPERTY_RANGE, SUB_CLASS
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 import json
@@ -442,6 +442,18 @@ class NeoApp:
         def _service_func(tx, id):
             # data = self.transform_props(props)
             query = "MATCH (n) WHERE ID(n) = {id} DETACH DELETE n".format(id=id)
+            request = tx.run(query)
+            return True
+
+        with self.driver.session() as session:
+            result = session.write_transaction(_service_func,  id)
+        
+        return result
+
+    def delete_resource_by_ID(self, id):
+        def _service_func(tx, id):
+            # data = self.transform_props(props)
+            query = "match (g) <- [:`{carries}`] - (f) - [:`{identified}`] -> (node) where ID(g) = {id} detach delete g,f,node".format(carries=CARRIES, identified=IDENTIFIED_BY, id=id)
             request = tx.run(query)
             return True
 
