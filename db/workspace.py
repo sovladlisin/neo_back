@@ -10,9 +10,7 @@ from .onthology_driver import Onthology
 from.onthology_namespace import *
 from .models import Resource, Markup, Entity, TextRelation
 from .views import getList
-uri = 'bolt://infra.iis.nsk.su'
-user="neo4j"
-password="pupil-flute-lunch-quarter-symbol-1816"
+
 
 
 # API IMPORTS
@@ -24,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getWorkspace(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     id = request.GET.get('id', None)
 
     origin_node,translation_node,commentary_node = o.getWorkspace(id)
@@ -73,7 +71,7 @@ def getWorkspace(request):
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getMarkups(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     original_object_uri = request.GET.get('original_object_uri', None)
     result = []
@@ -91,7 +89,7 @@ def getMarkups(request):
 def addMarkup(request):
     user = request.user
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     data = json.loads(request.body.decode('utf-8'))
 
@@ -112,7 +110,7 @@ def addMarkup(request):
 @permission_classes((IsAuthenticated,))
 def editMarkup(request):
     user = request.user
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     data = json.loads(request.body.decode('utf-8'))
 
@@ -158,7 +156,7 @@ def createTextEntity(request):
     
     new_entity = Entity(pos_end=pos_end, pos_start=pos_start, node_uri=node_uri, markup=markup)
     new_entity.save()
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     result = model_to_dict(new_entity)
     result['node'] = o.nodeToDict(o.getEntityByUri(new_entity.node_uri))
 
@@ -168,7 +166,7 @@ def createTextEntity(request):
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getTextEntities(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     markup_id = request.GET.get('markup_id', None)
     result = []
@@ -204,7 +202,7 @@ def deleteTextEntity(request):
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getNodeAttributes(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     node_uri = request.GET.get('node_uri', None)
     class_node, attributes, attributes_obj = o.getClassAttributes(node_uri) 
 
@@ -252,7 +250,7 @@ def createTextRelation(request):
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getTextRelations(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     markup_id = request.GET.get('markup_id', None)
     result = []

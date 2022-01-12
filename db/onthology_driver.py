@@ -147,8 +147,8 @@ class Onthology:
             else: 
                 props[param] = new_node[param]
         
+        props['uri'] = self.getRandomUri()
         created_node = self.driver.create_node(labels, props)
-        print('IDIDIDIDIDI:', created_node.id)
 
         for key in obj_props:
             rel = obj_props[key]

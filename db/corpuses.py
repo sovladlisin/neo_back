@@ -10,9 +10,6 @@ from .onthology_driver import Onthology
 from.onthology_namespace import *
 
 
-uri = 'bolt://infra.iis.nsk.su'
-user="neo4j"
-password="pupil-flute-lunch-quarter-symbol-1816"
 
 
 # API IMPORTS
@@ -24,7 +21,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getCorpuses(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getCorpuses()
     
     return JsonResponse(res, safe=False)
@@ -37,7 +34,7 @@ def getSubCorpuses(request):
     if id is None:
         return HttpResponse(status=404)
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getSubCorpuses(id)
     result = []
     for node in res:

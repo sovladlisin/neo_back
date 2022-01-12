@@ -12,9 +12,6 @@ from.onthology_namespace import *
 from django.http import JsonResponse
 
 
-uri = 'bolt://infra.iis.nsk.su'
-user="neo4j"
-password="pupil-flute-lunch-quarter-symbol-1816"
 
 
 # API IMPORTS
@@ -25,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getAllResources(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getResources()
     
     return JsonResponse(res, safe=False)
@@ -34,7 +31,7 @@ def getAllResources(request):
 @permission_classes((AllowAny,))
 def getCorpusResources(request):
     c_uri = request.GET.get('corpus_uri', '')
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getCorpusResources(c_uri)
     return JsonResponse(res, safe=False)
 
@@ -51,7 +48,7 @@ def createEvent(request):
         return HttpResponse(status=403)
 
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.createEvent(actor_id, place_id, time_string,label)
     return HttpResponse(status=200)
 

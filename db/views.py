@@ -12,9 +12,6 @@ from .models import Resource, Entity, Markup
 from operator import itemgetter
 
 
-uri = 'bolt://infra.iis.nsk.su'
-user="neo4j"
-password="pupil-flute-lunch-quarter-symbol-1816"
 
 
 
@@ -27,7 +24,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getDomainOntologies(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getDomainOntologies()
     result = []
     for node in res:
@@ -38,7 +35,7 @@ def getDomainOntologies(request):
 @permission_classes((AllowAny,))
 def getAllClasses(request):
     domain = request.GET.get('domain', '')
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
     res = o.getClasses()
     result = []
     for node in res:
@@ -51,7 +48,7 @@ def getAllClasses(request):
 def getClasses(request):
     domain = request.GET.get('domain', '')
     domain = RESOURCE_NAMESPACE if domain == 'Resource' else domain
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
     res = o.getParentClasses()
     result = []
     for node in res:
@@ -65,7 +62,7 @@ def getClassObjects(request):
     id = request.GET.get('id', None)
     if id is None:
         return HttpResponse(status=404)
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getClassObjects(id)
     result = []
     for node in res:
@@ -80,7 +77,7 @@ def getClassObject(request):
     if id is None:
         return HttpResponse(status=404)
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     node, signature, attributes, attributes_obj, resources = o.getClassObject(id)
 
@@ -127,7 +124,7 @@ def getClassFullSignature(request):
     c_uri = request.GET.get('uri', None)
     if c_uri is None:
         return HttpResponse(status=404)
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     class_sig, parent_sig, type_nodes, class_node = o.getClassFullSignature(c_uri)
     class_node_dict = o.nodeToDict(class_node)
     type_dicts = []
@@ -142,7 +139,7 @@ def getClass(request):
     id = request.GET.get('id', None)
     if id is None:
         return HttpResponse(status=404)
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     class_node, attributes, objects, attr_types, attributes_obj, attributes_types_obj = o.getClassById(id)
     class_obj = o.nodeToDict(class_node)
     attrs = []
@@ -189,7 +186,7 @@ def getSubClasses(request):
     id = request.GET.get('id', None)
     if id is None:
         return HttpResponse(status=404)
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getSubClassesById(id)
     result = []
     for node in res:
@@ -203,7 +200,7 @@ def addClassAttribute(request):
     data = json.loads(request.body.decode('utf-8'))
 
     domain = data.get('domain', '')
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
 
     class_id = data.get('class_id', None)
 
@@ -224,7 +221,7 @@ def addClassAttributeObject(request):
     data = json.loads(request.body.decode('utf-8'))
 
     domain = data.get('domain', '')
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
 
     class_id = data.get('class_id', None)
     attribute_class_id = data.get('attribute_class_id', None)
@@ -241,7 +238,7 @@ def addClassAttributeObject(request):
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
 def getClassesWithSignatures(request):
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getClassesWithSignatures()
     result = []
     for r in res:
@@ -255,11 +252,10 @@ def getObjectsByClassUri(request):
     if uri_s is None:
         return HttpResponse(status=404)
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getObjectsByClassUri(uri_s)
     result = []
     for r in res:
-        temp = o.nodeToDict(r)
         result.append(o.nodeToDict(r))
     return Response({'objects': result})
 
@@ -270,14 +266,14 @@ def getObjectsByClassUri(request):
 #         token = request.headers.get('Token', None)
 #         if token is None:
 #             return HttpResponse(status=401)
-#         user = authenticate_user(token)
-#         if user is None:
+#         DB_USER = authenticate_DB_USER(token)
+#         if DB_USER is None:
 #             return HttpResponse(status=401)
-#         if user.is_editor == False:
+#         if DB_USER.is_editor == False:
 #             return HttpResponse(status=401)
 
 #         data = json.loads(request.body.decode('utf-8'))
-#         o = Onthology(uri,user, password)
+#         o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 #         node = o.updateEntity(data)
 #         return JsonResponse(o.nodeToDict(node), safe=False)
 #     return HttpResponse('Wrong request')
@@ -289,7 +285,7 @@ def addEntity(request):
     data = json.loads(request.body.decode('utf-8'))
     labels = data['labels']
     node = data['node']
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     created_node = o.createEntity(labels, node)
     print('IDIDIDIDIDI:', created_node.id)
     return JsonResponse(o.nodeToDict(created_node), safe=False)
@@ -300,7 +296,7 @@ def updateEntity(request):
 
     data = json.loads(request.body.decode('utf-8'))
     node = data['node']
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     created_node = o.updateEntity(node)
     print('IDIDIDIDIDI:', created_node.id)
     return JsonResponse(o.nodeToDict(created_node), safe=False)
@@ -313,7 +309,7 @@ def deleteEntity(request):
     if id is None:
         return HttpResponse(status=403)
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     node = o.deleteObject(id)
     return JsonResponse({"result": True}, safe=False)
 
@@ -327,7 +323,7 @@ def updateIndex(request):
     domain = data.get('domain', None)
     if domain is None:
         return HttpResponse('Wrong request', status=404)
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
     res = o.updateIndex()
 
     return JsonResponse({'result': res}, safe=False)
@@ -345,7 +341,7 @@ def searchIndex(request):
     if domain is None or search is None or connector is None:
         return HttpResponse('Wrong request', status=404)
 
-    o = Onthology(uri,user, password,domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
     res = o.searchIndex(search, connector)
     result = []
     for r in res:
@@ -365,7 +361,7 @@ def deleteOntology(request):
     if domain is None:
         return HttpResponse(status=404)
 
-    o = Onthology(uri,user, password, domain)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD, domain)
     node = o.deleteOntology()
 
     for m in Markup.objects.all().filter(ontology_uri=domain):

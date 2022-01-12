@@ -11,9 +11,6 @@ from .models import Resource
 from .onthology_driver import Onthology
 from.onthology_namespace import *
 
-uri = 'bolt://infra.iis.nsk.su'
-user="neo4j"
-password="pupil-flute-lunch-quarter-symbol-1816"
 
 # API IMPORTS
 from rest_framework.response import Response
@@ -35,7 +32,7 @@ def uploadFile(request):
     file_type = request.GET.get('file_type','')
     note = request.GET.get('note','')
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     object_node = o.getEntityById(object_id)
     object_uri = object_node.get('uri')
@@ -45,10 +42,10 @@ def uploadFile(request):
     res.source.save(file_d.name,  ContentFile(file_d.read()))
     res.name = name
     res.resource_type = file_type
-    # res.original_object_uri = object_uri
+    # res.original_object_DB_URI = object_DB_URI
     res.save()
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     r = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note )
     res.original_object_uri = r['uri']
@@ -252,7 +249,7 @@ def uploadDocx(request):
     comment_r = Resource()
     comment_r.source.save('comment_' + name,  commentary)
 
-    o = Onthology(uri,user, password)
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     origin_node_uri, transaltion_node_uri, commentary_node_uri = o.createText(node, corpus_id, original_r.pk, trans_r.pk, comment_r.pk)
 
     original_r.name = 'original_' + name
