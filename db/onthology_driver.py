@@ -203,7 +203,12 @@ class Onthology:
         for item in r:
             return item.id
 
-    def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note):
+
+    # 0 - none
+    # image
+    # note
+    # article
+    def connectDigitalToResource(self, file_type, file_id, file_name, resource_id, note, picture_type = None):
         carrier = self.driver.create_node(['Resource', DIGITAL_CARRIER_URI, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: note})
 
         # that its digital
@@ -224,7 +229,10 @@ class Onthology:
         self.driver.create_relation_forward(carrier.id,appelation.id, [IDENTIFIED_BY], {})
 
         # create visual item
-        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), TITLE: file_name, NOTE_URI: note})
+        vi_type = ''
+        if picture_type:
+            vi_type = picture_type
+        visual_item = self.driver.create_node(['Resource', VISUAL_ITEM, OBJECT], {'uri':  self.getRandomUri(), TITLE: file_name, NOTE_URI: note, 'res_type': vi_type})
         self.driver.create_relation_forward(carrier.id,visual_item.id, [CARRIES], {})
 
         # connect to resource
@@ -390,6 +398,17 @@ class Onthology:
         node = self.driver.get_node_by_ID(node_id)
         node = self.nodeToDict(node)
         if VISUAL_ITEM in node['labels']:
+            
+            try:
+                mvi = self.getMediaVisualItems(node_id)
+                for m in mvi:
+                    pk = m['file']['pk']
+                    res = Resource.objects.get(pk=int(pk))
+                    res.delete()
+            except:
+                print('file delete failed')
+                pass
+
             self.driver.delete_resource_by_ID(node_id)
         else:
             self.driver.delete_node_by_ID(node_id)

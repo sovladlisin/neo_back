@@ -11,6 +11,7 @@ from .models import Resource
 from .onthology_driver import Onthology
 from.onthology_namespace import *
 
+from core.settings import *
 
 # API IMPORTS
 from rest_framework.response import Response
@@ -32,6 +33,8 @@ def uploadFile(request):
     file_type = request.GET.get('file_type','')
     note = request.GET.get('note','')
 
+    res_type = request.GET.get('res_type',None)
+
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     object_node = o.getEntityById(object_id)
@@ -42,12 +45,11 @@ def uploadFile(request):
     res.source.save(file_d.name,  ContentFile(file_d.read()))
     res.name = name
     res.resource_type = file_type
-    # res.original_object_DB_URI = object_DB_URI
     res.save()
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
-    r = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note )
+    r = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note,res_type )
     res.original_object_uri = r['uri']
     res.save()
 

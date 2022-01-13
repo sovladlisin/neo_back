@@ -11,6 +11,7 @@ from.onthology_namespace import *
 from .models import Resource, Entity, Markup
 from operator import itemgetter
 
+from core.settings import *
 
 
 

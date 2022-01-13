@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
 from django.db.models import Q
+
+from core.settings import *
 from .onthology_driver import Onthology
 from.onthology_namespace import *
 from django.http import JsonResponse

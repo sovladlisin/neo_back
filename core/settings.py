@@ -16,6 +16,12 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+DB_URI = 'bolt://infra.iis.nsk.su'
+DB_USER="neo4j"
+DB_PASSWORD="pupil-flute-lunch-quarter-symbol-1816"
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 

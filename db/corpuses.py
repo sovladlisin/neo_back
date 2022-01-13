@@ -9,6 +9,7 @@ from django.db.models import Q
 from .onthology_driver import Onthology
 from.onthology_namespace import *
 
+from core.settings import *
 
 
 

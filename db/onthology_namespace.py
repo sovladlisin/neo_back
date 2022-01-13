@@ -1,8 +1,6 @@
 
 
-DB_URI = 'bolt://infra.iis.nsk.su'
-DB_USER="neo4j"
-DB_PASSWORD="pupil-flute-lunch-quarter-symbol-1816"
+
 
 
 DOMAIN_ONTOLOGY = "DomainOntology"

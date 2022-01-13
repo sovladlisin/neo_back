@@ -10,6 +10,7 @@ from .onthology_driver import Onthology
 from.onthology_namespace import *
 from .models import Resource, Markup, Entity, TextRelation
 from .views import getList
+from core.settings import *
 
 
 
