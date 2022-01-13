@@ -250,8 +250,9 @@ class Onthology:
             self.driver.create_relation_forward(visual_item.id,resource_id, [REFERS_TO], {})
         
         # incorporate to corpus
-        corpsus_id = self.getResourceCorpus(resource_id)
-        self.driver.create_relation_forward(corpsus_id,visual_item.id, [CORPUS_RELATION], {})
+        if CORPUS not in resource['labels']:
+            corpsus_id = self.getResourceCorpus(resource_id)
+            self.driver.create_relation_forward(corpsus_id,visual_item.id, [CORPUS_RELATION], {})
 
 
         return carrier
