@@ -216,6 +216,8 @@ class Onthology:
         self.driver.create_relation_forward(carrier.id,carrier_class.id, [RDF_TYPE], {})
 
         # that its mp4/audio etc.
+        if file_type == 'jpg':
+            file_type = 'jpeg'
         recource_type_uri = 'http://erlangen-crm.org/current/' + file_type
    
 
