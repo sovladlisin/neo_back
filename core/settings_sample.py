@@ -16,9 +16,9 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-DB_URI = 'bolt://infra.iis.nsk.su'
+DB_URI = 'bolt://localhost'
 DB_USER="neo4j"
-DB_PASSWORD="pupil-flute-lunch-quarter-symbol-1816"
+DB_PASSWORD="locate-life-adrian-city-nirvana-2722"
 
 
 
