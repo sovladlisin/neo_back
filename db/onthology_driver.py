@@ -402,18 +402,15 @@ class Onthology:
         node = self.driver.get_node_by_ID(node_id)
         node = self.nodeToDict(node)
         if VISUAL_ITEM in node['labels']:
-            
-            try:
-                mvi = self.getMediaVisualItems(node_id)
-                for m in mvi:
-                    pk = m['file']['pk']
-                    res = Resource.objects.get(pk=int(pk))
-                    res.delete()
-            except:
-                print('file delete failed')
-                pass
-
+            mvi = self.getMediaVisualItems(node_id)
             self.driver.delete_resource_by_ID(node_id)
+
+            for m in mvi:
+                pk = m['file']['id']
+                res = Resource.objects.get(pk=int(pk))
+                res.delete()
+               
+
         elif LING_OBJECT in node['labels']:
             self.deleteText(node_id)
         else:
