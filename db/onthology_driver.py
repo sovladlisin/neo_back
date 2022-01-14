@@ -439,7 +439,7 @@ class Onthology:
         origin_uri = origin_node['uri']
 
         nodes = self.driver.custom_query(
-            'match (origin) -> [:`{translation}` | :`{commentary}`] - (node) where ID(origin) = {id} return node'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=node_id ), 'node')
+            'match (origin) - [:`{translation}` | :`{commentary}`] -> (node) where ID(origin) = {id} return node'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=node_id ), 'node')
         for n in nodes:
             t_n = self.nodeToDict(n)
             resource_f = Resource.objects.all().filter(original_object_uri = t_n['uri'])
