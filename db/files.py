@@ -310,7 +310,7 @@ def uploadDocx(request):
     # return response to update 
 
     response = {}
-    response['resource'] = o.nodeToDict(origin_node)
+    response['resource'] = origin_node
     response['media'] = []
     response['genres'] = []
     response['lang'] = []
