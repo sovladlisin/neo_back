@@ -24,6 +24,20 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
+def getVisualConnectedObjects(request):
+    id = request.GET.get('id', None)
+    if id is None:
+        return HttpResponse(status=400)
+
+    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
+    res = o.getVisualConnectedObjects(id)
+    result = []
+    for node in res:
+        result.append(o.nodeToDict(node))
+    return Response(result)
+
+@api_view(['GET', ])
+@permission_classes((AllowAny,))
 def getDomainOntologies(request):
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getDomainOntologies()

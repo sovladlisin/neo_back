@@ -398,6 +398,12 @@ class Onthology:
                     pass
         return response
 
+    def getVisualConnectedObjects(self, node_id):
+        s = self.driver.custom_query(
+            'match (node) - [:`{refers}` | :`{depicts}` | :`{corpus_r}`] - (g) where ID(g) = {id} return node'.format(refers=REFERS_TO, id=node_id, depicts=DEPICTS, corpus_r=CORPUS_RELATION), 'node')
+
+        return s
+
     def deleteObject(self, node_id):
         node = self.driver.get_node_by_ID(node_id)
         node = self.nodeToDict(node)
