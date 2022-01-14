@@ -453,7 +453,7 @@ class NeoApp:
     def delete_text_by_ID(self, id):
         def _service_func(tx, id):
             # data = self.transform_props(props)
-            query = 'match (a) - [:`{translation}` | :`{commentary}`] -> (b) <- [:`{carries}`] - (c) - [:`{identified}`] -> (d) where ID(k) = {id} detach delete a,b,c,d'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=id, carries=CARRIES, identified=IDENTIFIED_BY)
+            query = 'match (a) - [:`{translation}` | :`{commentary}`] -> (b) <- [:`{carries}`] - (c) - [:`{identified}`] -> (d) where ID(a) = {id} detach delete a,b,c,d'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=id, carries=CARRIES, identified=IDENTIFIED_BY)
             request = tx.run(query)
             return True
 
