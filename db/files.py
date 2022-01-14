@@ -49,11 +49,34 @@ def uploadFile(request):
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
-    r = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note,res_type )
+    r, visual = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note,res_type )
     res.original_object_uri = r['uri']
     res.save()
 
-    return JsonResponse(o.nodeToDict(r), safe=False)
+
+    # collect file to return 
+
+    response = {}
+    response['resource'] = o.nodeToDict(visual)
+    response['media'] = []
+    response['genres'] = []
+    response['lang'] = []
+    response['events'] = []
+    response['media_carrier'] = [
+        {
+            'file': {
+                'name': name,
+                'source': res.source.url,
+                'id': res.id,
+                'type': file_type
+            }
+        }
+    ]
+
+
+
+
+    return JsonResponse(response, safe=False)
 
 
 
@@ -66,6 +89,18 @@ def deleteFile(request):
     resource = Resource.objects.get(pk=id)
     resource.delete()
     return HttpResponse(status=200)
+
+@api_view(['POST', ])
+@permission_classes((IsAuthenticated,))
+def cleanUp(request):
+    res = 0
+    if request.user.is_admin:
+
+        o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
+        res = o.cleanUp()
+
+    return Response({'counter': res})
+    
 
 @api_view(['POST', ])
 @permission_classes((IsAuthenticated,))
@@ -252,7 +287,7 @@ def uploadDocx(request):
     comment_r.source.save('comment_' + name,  commentary)
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
-    origin_node_uri, transaltion_node_uri, commentary_node_uri = o.createText(node, corpus_id, original_r.pk, trans_r.pk, comment_r.pk)
+    origin_node_uri, transaltion_node_uri, commentary_node_uri, origin_node = o.createText(node, corpus_id, original_r.pk, trans_r.pk, comment_r.pk)
 
     original_r.name = 'original_' + name
     original_r.original_object_uri = origin_node_uri
@@ -271,6 +306,26 @@ def uploadDocx(request):
     trans_r.save()
     comment_r.save()
 
+
+    # return response to update 
+
+    response = {}
+    response['resource'] = o.nodeToDict(origin_node)
+    response['media'] = []
+    response['genres'] = []
+    response['lang'] = []
+    response['events'] = []
+    response['media_carrier'] = [
+        {
+            'file': {
+                'name': 'original_' + name,
+                'source': original_r.source.url,
+                'id':  original_r.id,
+                'type': 'text'
+            }
+        }
+    ]
+
     
     # print('IDIDIDIDIDI:', created_node.id)
-    return Response()
+    return Response(response)

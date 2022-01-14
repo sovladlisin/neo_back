@@ -5,7 +5,7 @@ import json
 from operator import itemgetter
 import datetime
 from  neo4j import time
-
+from .onthology_namespace import *
 import uuid
 
 class NeoApp:
@@ -54,7 +54,7 @@ class NeoApp:
         with self.driver.session() as session:
             result = session.write_transaction(_service_func, uri)
         
-        return result[0]
+        return result[0] if len(result) > 0 else None
 
     def get_nodes_by_params(self, labels, params):
 
@@ -442,6 +442,18 @@ class NeoApp:
         def _service_func(tx, id):
             # data = self.transform_props(props)
             query = "MATCH (n) WHERE ID(n) = {id} DETACH DELETE n".format(id=id)
+            request = tx.run(query)
+            return True
+
+        with self.driver.session() as session:
+            result = session.write_transaction(_service_func,  id)
+        
+        return result
+
+    def delete_text_by_ID(self, id):
+        def _service_func(tx, id):
+            # data = self.transform_props(props)
+            query = 'match (a) -> [:`{translation}` | :`{commentary}`] - (b) <- [:`{carries}`] - (c) - [:`{identified}`] -> (d) where ID(k) = {id} detach delete a,b,c,d'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=id, carries=CARRIES, identified=IDENTIFIED_BY)
             request = tx.run(query)
             return True
 

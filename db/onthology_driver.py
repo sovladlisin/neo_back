@@ -1,3 +1,4 @@
+from gettext import translation
 from .driver import NeoApp
 from .onthology_namespace import *
 import json
@@ -255,7 +256,7 @@ class Onthology:
             self.driver.create_relation_forward(corpsus_id,visual_item.id, [CORPUS_RELATION], {})
 
 
-        return carrier
+        return carrier, visual_item
 
     def createText(self, new_node, corpus_id, origin_r_id, trans_r_id, commentary_r_id):
         props = {}
@@ -334,7 +335,7 @@ class Onthology:
         origin_node = self.nodeToDict(origin_node)
         transaltion_node = self.nodeToDict(transaltion_node)
         commentary_node = self.nodeToDict(commentary_node)
-        return origin_node['uri'], transaltion_node['uri'], commentary_node['uri']
+        return origin_node['uri'], transaltion_node['uri'], commentary_node['uri'], origin_node
 
     def createEvent(self, actor_id, place_id, time_string,label):
         event_class = self.driver.get_node_by_uri(EVENT)
@@ -413,8 +414,47 @@ class Onthology:
                 pass
 
             self.driver.delete_resource_by_ID(node_id)
+        elif LING_OBJECT in node['labels']:
+            self.deleteText(node_id)
         else:
             self.driver.delete_node_by_ID(node_id)
+        return True
+
+    def cleanUp(self):
+        resources = Resource.objects.all()
+        counter = 0
+        for r in resources:
+            node = self.driver.get_node_by_uri(r.original_object_uri)
+            if node:
+                pass
+            else:
+                r.delete()
+                counter += 1
+
+        return counter
+
+    def deleteText(self, node_id):
+        origin = self.driver.get_node_by_ID(node_id)
+        origin_node = self.nodeToDict(origin)
+        origin_uri = origin_node['uri']
+
+        nodes = self.driver.custom_query(
+            'match (origin) -> [:`{translation}` | :`{commentary}`] - (node) where ID(origin) = {id} return node'.format(translation=HAS_TRANSLATION, commentary =HAS_COMMENTARY, id=node_id ), 'node')
+        for n in nodes:
+            t_n = self.nodeToDict(n)
+            resource_f = Resource.objects.all().filter(original_object_uri = t_n['uri'])
+            if resource_f.count() > 0:
+                resource_f = resource_f.first()
+                resource_f.delete()
+
+        resource_f = Resource.objects.all().filter(original_object_uri = origin_uri)
+        if resource_f.count() > 0:
+            resource_f = resource_f.first()
+            resource_f.delete()
+
+        
+        s = self.driver.delete_text_by_ID(node_id)
+
         return True
 
     def getMediaVisualItems(self,node_id):

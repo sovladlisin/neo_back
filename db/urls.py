@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls import url
 from .views import deleteEntity, deleteOntology, searchIndex, updateIndex, getClassFullSignature, addEntity, getDomainOntologies, getAllClasses, getClasses,getClassObjects, addClassAttributeObject, updateEntity, getSubClasses, updateEntity,getClassObject,addClassAttribute, getClass,getClassesWithSignatures, getObjectsByClassUri
 from .corpuses import getCorpuses, getSubCorpuses
-from .files import changeComments,uploadFile,deleteFile,uploadDocxFirstTable, uploadDocx
+from .files import changeComments,uploadFile,deleteFile,uploadDocxFirstTable, uploadDocx, cleanUp
 from .workspace import deleteMarkup, getTextEntities, getWorkspace,getMarkups,addMarkup, deleteTextEntity, createTextEntity, editMarkup,getNodeAttributes, createTextRelation, getTextRelations, deleteTextRelation
 from .resources import (
     getAllResources,
@@ -10,6 +10,9 @@ from .resources import (
     createEvent
 )
 urlpatterns = [
+    path('cleanUp',cleanUp , name='cleanUp'),
+
+
     path('getDomainOntologies',getDomainOntologies , name='getDomainOntologies'),
     path('deleteOntology',deleteOntology , name='deleteOntology'),
 

@@ -1,5 +1,5 @@
 from django.db import models
-
+from db_file_storage.model_utils import delete_file, delete_file_if_needed
 from user_auth.models import Account
 
 
@@ -13,6 +13,15 @@ class Resource(models.Model):
     name = models.CharField(default='Не указано', max_length=500)
     original_object_uri = models.CharField(default='', max_length=1000)
     resource_type = models.CharField(default='', max_length=300)
+
+
+    def save(self, *args, **kwargs):
+        delete_file_if_needed(self, 'source')
+        super(Resource, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        super(Resource, self).delete(*args, **kwargs)
+        delete_file(self, 'source')
 
 class Markup(models.Model):
     account = models.ForeignKey(
