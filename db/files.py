@@ -42,8 +42,9 @@ def uploadFile(request):
 
     art_name = str(datetime.datetime.now().time())[:8]
 
+
     res = Resource()
-    res.source.save(file_type + art_name,  ContentFile(file_d.read()))
+    res.source.save(file_type + art_name + '.' + file_type,  ContentFile(file_d.read()))
     res.name = name
     res.resource_type = file_type
     res.save()
