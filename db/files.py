@@ -40,9 +40,10 @@ def uploadFile(request):
     object_node = o.getEntityById(object_id)
     object_uri = object_node.get('uri')
 
+    art_name = str(datetime.datetime.now().time())[:8]
 
     res = Resource()
-    res.source.save(file_d.name,  ContentFile(file_d.read()))
+    res.source.save(file_type + art_name,  ContentFile(file_d.read()))
     res.name = name
     res.resource_type = file_type
     res.save()
