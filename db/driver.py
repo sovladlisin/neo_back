@@ -197,8 +197,8 @@ class NeoApp:
                         res_type_check = False
 
 
-                
-                if len(text_search) > 0 and text_search not in json.dumps(self.nodeToDict(record['resource'])):
+
+                if len(text_search) > 0 and text_search.str.lower() not in json.dumps(self.nodeToDict(record['resource'])).str.lower():
                     check = False
 
                 lang_check = True
