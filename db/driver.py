@@ -165,7 +165,6 @@ class NeoApp:
             data_size = 0
 
             for record in request:
-                data_size += 1
                 check = True
 
                 current_res_type = record['resource'].get('res_type', '')
@@ -197,11 +196,17 @@ class NeoApp:
                     if 'text' not in res_types and LING_OBJECT in record['resource'].labels:
                         res_type_check = False
 
+
+                
                 if len(text_search) > 0 and text_search not in json.dumps(self.nodeToDict(record['resource'])):
                     check = False
 
-                if lang_id != -1 and record['lang'] and lang_id != record['lang'].id:
-                    check = False
+                lang_check = True
+                if lang_id != -1:
+                    lang_check = False
+                    if record['lang'] and lang_id == record['lang'].id:
+                        lang_check = True
+                
 
                 actor_check = True
                 place_check = True
@@ -247,7 +252,7 @@ class NeoApp:
                             genre_check = True
 
 
-                if check and res_type_check and genre_check and actor_check and place_check:
+                if check and res_type_check and genre_check and actor_check and place_check and lang_check:
                     new_request.append(record)
 
 
@@ -257,6 +262,8 @@ class NeoApp:
             start = chunk_size * (chunk_number - 1)
             end = chunk_size * chunk_number
             for record in new_request:
+                data_size += 1
+
                 chunk_counter += 1
                 if chunk_counter <= end and chunk_counter > start:
 
