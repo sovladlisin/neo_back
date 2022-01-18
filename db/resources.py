@@ -44,7 +44,7 @@ def getCorpusResources(request):
     chunk_size = request.GET.get('chunk_size', 50)
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
-
+    print('Attention: ', res_types )
 
     res,data_size, counters = o.getCorpusResources(c_uri, res_types, text_search, lang_id, actor_id, place_id,genre_id, time_search, chunk_number, chunk_size)
     return JsonResponse({'data': res, 'data_size': data_size, 'counters': counters}, safe=False)

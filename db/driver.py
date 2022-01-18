@@ -190,7 +190,6 @@ class NeoApp:
                 # end collecting
 
                 res_type_check = True
-                print('Attention: ', res_types)
                 if len(res_types) > 0:
                     if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
                         res_type_check = False
