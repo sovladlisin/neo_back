@@ -29,19 +29,21 @@ def getAllResources(request):
     
     return JsonResponse(res, safe=False)
 
-@api_view(['GET', ])
+@api_view(['POST', ])
 @permission_classes((AllowAny,))
 def getCorpusResources(request):
-    c_uri = request.GET.get('corpus_uri', '')
-    res_types = request.GET.get('res_types', [])
-    text_search = request.GET.get('text_search', '')
-    lang_id = request.GET.get('lang_id', -1)
-    actor_id = request.GET.get('actor_id', -1)
-    place_id = request.GET.get('place_id', -1)
-    genre_id = request.GET.get('genre_id', -1)
-    time_search = request.GET.get('time_search', '')
-    chunk_number = request.GET.get('chunk_number', 1)
-    chunk_size = request.GET.get('chunk_size', 50)
+    data = json.loads(request.body.decode('utf-8'))
+
+    c_uri = data.get('corpus_uri', '')
+    res_types = data.get('res_types', [])
+    text_search = data.get('text_search', '')
+    lang_id = data.get('lang_id', -1)
+    actor_id = data.get('actor_id', -1)
+    place_id = data.get('place_id', -1)
+    genre_id = data.get('genre_id', -1)
+    time_search = data.get('time_search', '')
+    chunk_number = data.get('chunk_number', 1)
+    chunk_size = data.get('chunk_size', 50)
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     print('Attention: ', res_types )
