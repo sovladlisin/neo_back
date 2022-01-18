@@ -38,6 +38,7 @@ def getCorpusResources(request):
     lang_id = request.GET.get('lang_id', -1)
     actor_id = request.GET.get('actor_id', -1)
     place_id = request.GET.get('place_id', -1)
+    genre_id = request.GET.get('genre_id', -1)
     time_search = request.GET.get('time_search', '')
     chunk_number = request.GET.get('chunk_number', 1)
     chunk_size = request.GET.get('chunk_size', 50)
@@ -45,8 +46,8 @@ def getCorpusResources(request):
 
 
 
-    res,data_size = o.getCorpusResources(c_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size)
-    return JsonResponse({'data': res, 'data_size': data_size}, safe=False)
+    res,data_size, counters = o.getCorpusResources(c_uri, res_types, text_search, lang_id, actor_id, place_id,genre_id, time_search, chunk_number, chunk_size)
+    return JsonResponse({'data': res, 'data_size': data_size, 'counters': counters}, safe=False)
 
 @api_view(['POST', ])
 @permission_classes((AllowAny,))

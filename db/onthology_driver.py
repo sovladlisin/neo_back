@@ -186,8 +186,8 @@ class Onthology:
     def getRandomUri(self):
         return 'http://erlangen-crm.org/current/' +  str(uuid.uuid4())
 
-    def getCorpusResources(self, corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size):
-        data, data_size = self.driver.getResources(corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size)
+    def getCorpusResources(self, corpus_uri, res_types, text_search, lang_id, actor_id, place_id, genre_id,time_search, chunk_number, chunk_size):
+        data, data_size, counters = self.driver.getResources(corpus_uri, res_types, text_search, lang_id, actor_id, place_id, genre_id,time_search, chunk_number, chunk_size)
         for res in data:
             for m in res['media']:
                 if m:
@@ -196,7 +196,7 @@ class Onthology:
             # res['notations'] = Markup.objects.all().filter(original_object_uri=res['resource']['uri']).count()
 
 
-        return data, data_size
+        return data, data_size, counters
 
     def getResourceCorpus(self, node_id):
         query = "MATCH (node) - [:`{inc}`] -> (n) where ID(n) = {node_id} RETURN node".format(inc=CORPUS_RELATION, node_id=node_id)

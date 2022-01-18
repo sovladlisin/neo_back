@@ -102,8 +102,8 @@ class NeoApp:
         
         return result[0]
 
-    def getResources(self, corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size):
-        def _service_func(tx,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size):
+    def getResources(self, corpus_uri, res_types, text_search, lang_id, actor_id, place_id, genre_id, time_search, chunk_number, chunk_size):
+        def _service_func(tx,corpus_uri, res_types, text_search, lang_id, actor_id, place_id,genre_id, time_search, chunk_number, chunk_size):
             q = '''
            match (:`http://erlangen-crm.org/current/F74_Corpus` {uri: 'AFDSHGTKCNGFKDOMDLFG'})-[:`http://erlangen-crm.org/current/P165_incorporates`]->(resource) where resource:`http://erlangen-crm.org/current/E33_Linguistic_Object` or resource:`http://erlangen-crm.org/current/E36_Visual_Item`
 
@@ -151,10 +151,42 @@ class NeoApp:
             # chunk_size = 50
             # chunk_number = 1
 
+            images = 0
+            video = 0
+            audio = 0
+            notes = 0
+            articles = 0
+            langs = []
+            actors = []
+            places = []
+            genres = []
+            texts = 0
+
             for record in request:
+
                 check = True
 
                 current_res_type = record.get('res_type', '')
+
+                # collecting
+                # 
+                # 
+                if current_res_type != '':
+                    images = images + 1 if 'image' == current_res_type else images
+                    video = video + 1 if 'video' == current_res_type else video
+                    audio = audio + 1 if 'audio' == current_res_type else audio
+                    notes = notes + 1 if 'note' == current_res_type else notes
+                    articles = articles + 1 if 'article' == current_res_type else articles
+
+                if LING_OBJECT in record['resource'].labels:
+                    texts += 1
+
+                if record['lang']:
+                    langs.append(self.nodeToDict(record['lang']))
+                #
+                #  
+                # end collecting
+
                 res_type_check = True
                 if len(res_types) > 0:
                     if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
@@ -169,14 +201,51 @@ class NeoApp:
                 if lang_id != -1 and record['lang'] and lang_id != record['lang'].id:
                     check = False
 
+                actor_check = True
+                place_check = True
                 for event in record['events']:
-                    if actor_id != -1 and event['actor'] and actor_id != event['actor'].id:
-                        check = False
+                    
+                    # collecting
+                    # 
+                    # 
+                    if event['actor']:
+                        actors.append(self.nodeToDict(event['actor']))
+                    if event['place']:
+                        places.append(self.nodeToDict(event['place']))
+                    # 
+                    # 
+                    # end collecting 
 
-                    if place_id != -1 and event['place'] and place_id != event['place'].id:
-                        check = False
 
-                if check and res_type_check:
+                    if actor_id != -1:
+                        actor_check = False
+
+                        if event['actor'] and actor_id == event['actor'].id:
+                            actor_check = True
+
+                    if place_id != -1:
+                        place_check = False
+                        if event['place'] and place_id == event['place'].id:
+                            place_check = True
+
+                genre_check = True
+                for genre in record['genres']:
+
+                    # collecting
+                    # 
+                    # 
+                    genres.append(self.nodeToDict(genre))
+                    # 
+                    # 
+                    # end collecting
+
+                    if genre_id != -1:
+                        genre_check = False
+                        if  genre_id == genre.id:
+                            genre_check = True
+
+
+                if check and res_type_check and genre_check and actor_check and place_check:
                     new_request.append(record)
 
             chunk_counter = 0
@@ -209,11 +278,25 @@ class NeoApp:
 
                     result.append(temp)
 
-            return result, len(request)
+            counters = {
+            'images': images,
+            'video': video,
+            'audio': audio,
+            'notes': notes,
+            'articles':articles,
+            'langs': langs,
+            'actors': actors,
+            'places': places,
+            'genres': genres,
+            'texts': texts
+            }
+
+
+            return result, len(request), counters
 
         with self.driver.session() as session:
-            result, request_size = session.write_transaction(_service_func,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size)
-        return result, request_size
+            result, request_size, counters = session.write_transaction(_service_func,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, genre_id,time_search, chunk_number, chunk_size)
+        return result, request_size ,counters
 
     def nodeToDict(self, node):
         result = {}
