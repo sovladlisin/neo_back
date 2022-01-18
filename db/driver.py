@@ -168,7 +168,7 @@ class NeoApp:
                 data_size += 1
                 check = True
 
-                current_res_type = record.get('res_type', '')
+                current_res_type = record['resource'].get('res_type', '')
 
                 # collecting
                 # 
