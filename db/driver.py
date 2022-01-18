@@ -102,8 +102,8 @@ class NeoApp:
         
         return result[0]
 
-    def getResources(self, corpus_uri):
-        def _service_func(tx,corpus_uri):
+    def getResources(self, corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size):
+        def _service_func(tx,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size):
             q = '''
            match (:`http://erlangen-crm.org/current/F74_Corpus` {uri: 'AFDSHGTKCNGFKDOMDLFG'})-[:`http://erlangen-crm.org/current/P165_incorporates`]->(resource) where resource:`http://erlangen-crm.org/current/E33_Linguistic_Object` or resource:`http://erlangen-crm.org/current/E36_Visual_Item`
 
@@ -138,36 +138,82 @@ class NeoApp:
             request = tx.run(q)
 
             result = []
+
+
+            # res_types = []
+            new_request = []
+            # text_search = ''
+            # lang_id = -1
+            # actor_id = -1
+            # place_id = -1
+            # time_search = ''
+
+            # chunk_size = 50
+            # chunk_number = 1
+
             for record in request:
-           
-                temp = {}
-                temp['resource'] = self.nodeToDict(record['resource'])
-                temp['media'] = []
-                temp['genres'] = []
-                temp['lang'] = self.nodeToDict(record['lang'])
-                temp['events'] = []
-        
-                for node1 in record['media']:
-                    temp['media'].append(self.nodeToDict(node1))
-                for node2 in record['genres']:
-                    temp['genres'].append(self.nodeToDict(node2))
+                check = True
+
+                current_res_type = record.get('res_type', '')
+                res_type_check = True
+                if len(res_types) > 0:
+                    if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
+                        res_type_check = False
+
+                    if 'text' not in res_types and LING_OBJECT in record['resource'].labels:
+                        res_type_check = False
+
+                if len(text_search) > 0 and text_search not in json.dumps(record['resource'].values()):
+                    check = False
+
+                if lang_id != -1 and record['lang'] and lang_id != record['lang'].id:
+                    check = False
+
+                for event in record['events']:
+                    if actor_id != -1 and event['actor'] and actor_id != event['actor'].id:
+                        check = False
+
+                    if place_id != -1 and event['place'] and place_id != event['place'].id:
+                        check = False
+
+                if check and res_type_check:
+                    new_request.append(record)
+
+            chunk_counter = 0
+            start = chunk_size * (chunk_number - 1)
+            end = chunk_size * chunk_number
+            for record in new_request:
+                chunk_counter += 1
+                if chunk_counter <= end and chunk_counter > start:
+
+                    temp = {}
+                    temp['resource'] = self.nodeToDict(record['resource'])
+                    temp['media'] = []
+                    temp['genres'] = []
+                    temp['lang'] = self.nodeToDict(record['lang'])
+                    temp['events'] = []
+            
+                    for node1 in record['media']:
+                        temp['media'].append(self.nodeToDict(node1))
+                    for node2 in record['genres']:
+                        temp['genres'].append(self.nodeToDict(node2))
 
 
 
-                for node3 in record['events']:
-                    temp2 = {}
-                    temp2['actor'] = self.nodeToDict(node3['actor'])
-                    temp2['role']= self.nodeToDict(node3['role'])
-                    temp2['place']= self.nodeToDict(node3['place'])
-                    temp['events'].append(temp2)
+                    for node3 in record['events']:
+                        temp2 = {}
+                        temp2['actor'] = self.nodeToDict(node3['actor'])
+                        temp2['role']= self.nodeToDict(node3['role'])
+                        temp2['place']= self.nodeToDict(node3['place'])
+                        temp['events'].append(temp2)
 
-                result.append(temp)
+                    result.append(temp)
 
-            return result
+            return result, len(request)
 
         with self.driver.session() as session:
-            result = session.write_transaction(_service_func,corpus_uri)
-        return result
+            result, request_size = session.write_transaction(_service_func,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size)
+        return result, request_size
 
     def nodeToDict(self, node):
         result = {}

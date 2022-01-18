@@ -33,9 +33,20 @@ def getAllResources(request):
 @permission_classes((AllowAny,))
 def getCorpusResources(request):
     c_uri = request.GET.get('corpus_uri', '')
+    res_types = request.GET.get('res_types', [''])
+    text_search = request.GET.get('text_search', '')
+    lang_id = request.GET.get('lang_id', -1)
+    actor_id = request.GET.get('actor_id', -1)
+    place_id = request.GET.get('place_id', -1)
+    time_search = request.GET.get('time_search', '')
+    chunk_number = request.GET.get('chunk_number', 1)
+    chunk_size = request.GET.get('chunk_size', 50)
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
-    res = o.getCorpusResources(c_uri)
-    return JsonResponse(res, safe=False)
+
+
+
+    res,data_size = o.getCorpusResources(c_uri, res_types, text_search, lang_id, actor_id, place_id, time_search, chunk_number, chunk_size)
+    return JsonResponse({'data': res, 'data_size': data_size}, safe=False)
 
 @api_view(['POST', ])
 @permission_classes((AllowAny,))
