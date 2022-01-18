@@ -33,7 +33,7 @@ def getAllResources(request):
 @permission_classes((AllowAny,))
 def getCorpusResources(request):
     c_uri = request.GET.get('corpus_uri', '')
-    res_types = request.GET.get('res_types', [''])
+    res_types = request.GET.get('res_types', [])
     text_search = request.GET.get('text_search', '')
     lang_id = request.GET.get('lang_id', -1)
     actor_id = request.GET.get('actor_id', -1)

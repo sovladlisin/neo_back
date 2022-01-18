@@ -190,6 +190,7 @@ class NeoApp:
                 # end collecting
 
                 res_type_check = True
+                print('Attention: ', res_types)
                 if len(res_types) > 0:
                     if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
                         res_type_check = False
@@ -332,6 +333,7 @@ class NeoApp:
             attributes_types_obj = {}
 
             for r in res:
+                print(r)
                 if (PROPERTY_LABEL in list(r['atr'].labels)):
                     attributes.append(r['atr'])
                     attributes_types[r['atr'].id] = r['type']
@@ -646,6 +648,7 @@ class NeoApp:
         if len(props) == 0:
             return ''
         data = "{"
+        # print(props)
         for p in props:
             temp = "`{p}`".format(p=p)
             temp +=':'
