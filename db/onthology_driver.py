@@ -90,7 +90,6 @@ class Onthology:
         result = {}
         if node is None:
             return None
-        print(node)
         result['id'] = node.id
         result['labels'] = list(node.labels)
         result['params'] = list(node.keys())
@@ -127,7 +126,6 @@ class Onthology:
                 props[param] = new_node[param]
         
         updated_node = self.driver.set_node(new_node['id'], props)
-        print('IDIDIDIDIDI:', updated_node.id)
 
         for key in obj_props:
             rel = obj_props[key]
@@ -331,7 +329,6 @@ class Onthology:
         # incorporate to corpus
         self.driver.create_relation_forward(corpus_id,origin_node.id, [CORPUS_RELATION], {})
 
-        print(origin_node)
         origin_node = self.nodeToDict(origin_node)
         transaltion_node = self.nodeToDict(transaltion_node)
         commentary_node = self.nodeToDict(commentary_node)

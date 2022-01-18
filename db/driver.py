@@ -305,7 +305,6 @@ class NeoApp:
 
     def nodeToDict(self, node):
         result = {}
-        print()
         if node is None:
             return None
         result['id'] = node.id
@@ -333,7 +332,6 @@ class NeoApp:
             attributes_types_obj = {}
 
             for r in res:
-                print(r)
                 if (PROPERTY_LABEL in list(r['atr'].labels)):
                     attributes.append(r['atr'])
                     attributes_types[r['atr'].id] = r['type']
@@ -648,7 +646,6 @@ class NeoApp:
         if len(props) == 0:
             return ''
         data = "{"
-        # print(props)
         for p in props:
             temp = "`{p}`".format(p=p)
             temp +=':'
