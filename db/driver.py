@@ -162,8 +162,10 @@ class NeoApp:
             genres = []
             texts = 0
 
-            for record in request:
+            data_size = 0
 
+            for record in request:
+                data_size += 1
                 check = True
 
                 current_res_type = record.get('res_type', '')
@@ -295,7 +297,7 @@ class NeoApp:
             }
 
 
-            return result, len(request), counters
+            return result, data_size, counters
 
         with self.driver.session() as session:
             result, request_size, counters = session.write_transaction(_service_func,corpus_uri, res_types, text_search, lang_id, actor_id, place_id, genre_id,time_search, chunk_number, chunk_size)
