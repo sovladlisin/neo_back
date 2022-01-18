@@ -248,6 +248,9 @@ class NeoApp:
                 if check and res_type_check and genre_check and actor_check and place_check:
                     new_request.append(record)
 
+
+            chunk_number = int(chunk_number)
+            chunk_size = int(chunk_size)
             chunk_counter = 0
             start = chunk_size * (chunk_number - 1)
             end = chunk_size * chunk_number
