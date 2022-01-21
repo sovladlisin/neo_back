@@ -553,15 +553,15 @@ class Onthology:
         result = []
         res = self.driver.get_node_without_children_reverse([CORPUS],[CORPUS_RELATION], [CORPUS])
         for r in res:
-            query = "match (n)-[:`{r}`*]-(node:`{l}`) where ID(n)={id} return node".format(r=CORPUS_RELATION, l=LING_OBJECT, id=r.id)
-            res2 = self.driver.custom_query(query, 'node')
+            # query = "match (n)-[:`{r}`*]-(node:`{l}`) where ID(n)={id} return node".format(r=CORPUS_RELATION, l=LING_OBJECT, id=r.id)
+            # res2 = self.driver.custom_query(query, 'node')
 
             temp = self.nodeToDict(r)
             texts = []
             resources = []
-            for t in res2:
-                texts.append(self.nodeToDict(t))
-                resources.append(self.getObjectVisualItems(t.id))
+            # for t in res2:
+            #     texts.append(self.nodeToDict(t))
+            #     resources.append(self.getObjectVisualItems(t.id))
             temp['texts'] = texts
             temp['resources'] = resources
             result.append(temp)
