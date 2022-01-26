@@ -162,6 +162,11 @@ class NeoApp:
             genres = []
             texts = 0
 
+            langs_ids = []
+            actors_ids = []
+            places_ids = []
+            genres_ids = []
+
             data_size = 0
 
             for record in request:
@@ -182,8 +187,9 @@ class NeoApp:
                 if LING_OBJECT in record['resource'].labels:
                     texts += 1
 
-                if record['lang']:
+                if record['lang'] and record['lang'].id not in langs_ids:
                     langs.append(self.nodeToDict(record['lang']))
+                    langs_ids.append(record['lang'].id)
                 #
                 #  
                 # end collecting
@@ -215,10 +221,13 @@ class NeoApp:
                     # collecting
                     # 
                     # 
-                    if event['actor']:
+                    if event['actor'] and event['actor'].id not in actors_ids:
                         actors.append(self.nodeToDict(event['actor']))
-                    if event['place']:
+                        actors_ids.append(event['actor'].id)
+                    if event['place'] and event['place'].id not in places_ids:
                         places.append(self.nodeToDict(event['place']))
+                        places_ids.append(event['place'].id)
+
                     # 
                     # 
                     # end collecting 
@@ -241,7 +250,9 @@ class NeoApp:
                     # collecting
                     # 
                     # 
-                    genres.append(self.nodeToDict(genre))
+                    if genre.id not in genres_ids:
+                        genres.append(self.nodeToDict(genre))
+                        genres_ids.append(genre.id)
                     # 
                     # 
                     # end collecting
