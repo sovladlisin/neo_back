@@ -214,8 +214,8 @@ class NeoApp:
                         lang_check = True
                 
 
-                actor_check = True
-                place_check = True
+                actor_check = True if actor_id == -1 else False
+                place_check = True if place_id == -1 else False
                 for event in record['events']:
                     
                     # collecting
@@ -234,17 +234,14 @@ class NeoApp:
 
 
                     if actor_id != -1:
-                        actor_check = False
-
                         if event['actor'] and actor_id == event['actor'].id:
                             actor_check = True
 
                     if place_id != -1:
-                        place_check = False
                         if event['place'] and place_id == event['place'].id:
                             place_check = True
 
-                genre_check = True
+                genre_check = True if genre_id == -1 else False
                 for genre in record['genres']:
 
                     # collecting
@@ -257,10 +254,8 @@ class NeoApp:
                     # 
                     # end collecting
 
-                    if genre_id != -1:
-                        genre_check = False
-                        if  genre_id == genre.id:
-                            genre_check = True
+                    if genre_id != -1 and genre_id == genre.id:
+                        genre_check = True
 
 
                 if check and res_type_check and genre_check and actor_check and place_check and lang_check:
