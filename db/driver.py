@@ -207,11 +207,9 @@ class NeoApp:
                 if len(text_search) > 0 and text_search.lower() not in json.dumps(self.nodeToDict(record['resource']),ensure_ascii=False).lower():
                     check = False
 
-                lang_check = True
-                if lang_id != -1:
-                    lang_check = False
-                    if record['lang'] and lang_id == record['lang'].id:
-                        lang_check = True
+                lang_check = True if lang_id == -1 else False
+                if record['lang'] and lang_id == record['lang'].id:
+                    lang_check = True
                 
 
                 actor_check = True if actor_id == -1 else False
