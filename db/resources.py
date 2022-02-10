@@ -55,16 +55,17 @@ def getCorpusResources(request):
 @permission_classes((AllowAny,))
 def createEvent(request):
     data = json.loads(request.body.decode('utf-8'))
-    actor_id = data.get('actor_id', None)
+    actors_id = data.get('actor_id', None)
     place_id = data.get('place_id', None)
     time_string = data.get('time_string', None)
-    label = data.get('label', None)
+    resource_id = data.get('resource_id', None)
+    connection_type = data.get('connection_type', None)
 
-    if None in [actor_id, place_id, time_string,label]:
+    if None in [actors_id, place_id, time_string,resource_id,connection_type ]:
         return HttpResponse(status=403)
 
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
-    res = o.createEvent(actor_id, place_id, time_string,label)
+    res = o.createEvent(actors_id, place_id, time_string,resource_id, connection_type )
     return HttpResponse(status=200)
 

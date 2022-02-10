@@ -334,33 +334,48 @@ class Onthology:
         commentary_node = self.nodeToDict(commentary_node)
         return origin_node['uri'], transaltion_node['uri'], commentary_node['uri'], origin_node
 
-    def createEvent(self, actor_id, place_id, time_string,label):
-        event_class = self.driver.get_node_by_uri(EVENT)
-        appelation_class = self.driver.get_node_by_uri(APPELATION)
-        time_class = self.driver.get_node_by_uri(TIME)
-        object_class = self.driver.get_node_by_uri(OBJECT)
+    def createEvent(self, actors_ids, place_id, time_string, resource_id, connection_type ):
 
-        created_event = self.driver.create_node(['Resource', EVENT, OBJECT], {'uri': self.getRandomUri(), LABEL: label})
-        self.driver.create_relation_forward(created_event.id,event_class.id, [RDF_TYPE], {})
-        self.driver.create_relation_forward(created_event.id,object_class.id, [RDF_TYPE], {})
-
-        self.driver.create_relation_forward(created_event.id,actor_id, [EVENT_PERMORMED_BY], {})
-        self.driver.create_relation_forward(created_event.id,place_id, [EVENT_TOOK_PLACE], {})
-
-        created_time = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri()})
-        self.driver.create_relation_forward(created_time.id,time_class.id, [RDF_TYPE], {})
-        self.driver.create_relation_forward(created_time.id,object_class.id, [RDF_TYPE], {})
+        for item in actors_ids:
+            actor_id = item['actor_id']
+            label = item['title']
 
 
 
-        created_time_appelation = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: time_string})
-        self.driver.create_relation_forward(created_time_appelation.id,appelation_class.id, [RDF_TYPE], {})
-        self.driver.create_relation_forward(created_time_appelation.id,object_class.id, [RDF_TYPE], {})
+            event_class = self.driver.get_node_by_uri(EVENT)
+            appelation_class = self.driver.get_node_by_uri(APPELATION)
+            time_class = self.driver.get_node_by_uri(TIME)
+            object_class = self.driver.get_node_by_uri(OBJECT)
 
-        self.driver.create_relation_forward(created_event.id,created_time.id, [TIME_RELATION], {})
+            created_event = self.driver.create_node(['Resource', EVENT, OBJECT], {'uri': self.getRandomUri(), LABEL: label})
+            self.driver.create_relation_forward(created_event.id,event_class.id, [RDF_TYPE], {})
+            self.driver.create_relation_forward(created_event.id,object_class.id, [RDF_TYPE], {})
+
+            self.driver.create_relation_forward(created_event.id,actor_id, [EVENT_PERMORMED_BY], {})
+
+            self.driver.create_relation_forward(created_event.id,resource_id, [connection_type], {})
 
 
-        self.driver.create_relation_forward(created_time.id,created_time_appelation.id, [IDENTIFIED_BY], {})
+            if place_id != -1:
+                self.driver.create_relation_forward(created_event.id,place_id, [EVENT_TOOK_PLACE], {})
+
+            if len(time_string) != 0:
+                created_time = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri()})
+                self.driver.create_relation_forward(created_time.id,time_class.id, [RDF_TYPE], {})
+                self.driver.create_relation_forward(created_time.id,object_class.id, [RDF_TYPE], {})
+
+
+
+                created_time_appelation = self.driver.create_node(['Resource', TIME, OBJECT], {'uri': self.getRandomUri(), NOTE_URI: time_string})
+                self.driver.create_relation_forward(created_time_appelation.id,appelation_class.id, [RDF_TYPE], {})
+                self.driver.create_relation_forward(created_time_appelation.id,object_class.id, [RDF_TYPE], {})
+
+                self.driver.create_relation_forward(created_event.id,created_time.id, [TIME_RELATION], {})
+
+
+                self.driver.create_relation_forward(created_time.id,created_time_appelation.id, [IDENTIFIED_BY], {})
+
+            
 
         return True
 
