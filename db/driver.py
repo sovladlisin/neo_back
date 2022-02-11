@@ -1,3 +1,4 @@
+from os import dup
 from db.onthology_namespace import CARRIES, IDENTIFIED_BY, PROPERTY_DOMAIN, PROPERTY_LABEL, PROPERTY_LABEL_OBJECT, PROPERTY_RANGE, SUB_CLASS
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
@@ -169,8 +170,18 @@ class NeoApp:
 
             data_size = 0
 
+            global_ids = []
+
             for record in request:
                 check = True
+
+                duplicate_check = False
+                current_id = record['resource'].id
+                if current_id in global_ids:
+                    duplicate_check = True
+                else:
+                    global_ids.append(current_id)
+
 
                 current_res_type = record['resource'].get('res_type', '')
 
@@ -255,9 +266,9 @@ class NeoApp:
                     if genre_id != -1 and genre_id == genre.id:
                         genre_check = True
 
-
-                if check and res_type_check and genre_check and actor_check and place_check and lang_check:
-                    new_request.append(record)
+                if duplicate_check == False:
+                    if check and res_type_check and genre_check and actor_check and place_check and lang_check:
+                        new_request.append(record)
 
 
             chunk_number = int(chunk_number)
@@ -265,6 +276,8 @@ class NeoApp:
             chunk_counter = 0
             start = chunk_size * (chunk_number - 1)
             end = chunk_size * chunk_number
+
+
             for record in new_request:
                 data_size += 1
 
@@ -277,13 +290,25 @@ class NeoApp:
                     temp['genres'] = []
                     temp['lang'] = self.nodeToDict(record['lang'])
                     temp['events'] = []
-            
+
+                    media_ids = []
                     for node1 in record['media']:
-                        temp['media'].append(self.nodeToDict(node1))
+                        media_id = node1.id
+                        if media_id in media_ids:
+                            pass
+                        else:
+                            temp['media'].append(self.nodeToDict(node1))
+                            media_ids.append(media_id)
+
+
+                    genre_ids = [] 
                     for node2 in record['genres']:
-                        temp['genres'].append(self.nodeToDict(node2))
-
-
+                        genre_id = node2.id
+                        if genre_id in genre_ids:
+                            pass
+                        else:
+                            temp['genres'].append(self.nodeToDict(node2))
+                            genre_ids.append(genre_id)
 
                     for node3 in record['events']:
                         temp2 = {}
