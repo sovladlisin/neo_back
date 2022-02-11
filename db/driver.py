@@ -182,91 +182,91 @@ class NeoApp:
                 else:
                     global_ids.append(current_id)
 
+                if duplicate_check == False:
 
-                current_res_type = record['resource'].get('res_type', '')
-
-                # collecting
-                # 
-                # 
-                if current_res_type != '':
-                    images = images + 1 if 'image' == current_res_type else images
-                    video = video + 1 if 'video' == current_res_type else video
-                    audio = audio + 1 if 'audio' == current_res_type else audio
-                    notes = notes + 1 if 'note' == current_res_type else notes
-                    articles = articles + 1 if 'article' == current_res_type else articles
-
-                if LING_OBJECT in record['resource'].labels:
-                    texts += 1
-
-                if record['lang'] and record['lang'].id not in langs_ids:
-                    langs.append(self.nodeToDict(record['lang']))
-                    langs_ids.append(record['lang'].id)
-                #
-                #  
-                # end collecting
-
-                res_type_check = True
-                if len(res_types) > 0:
-                    if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
-                        res_type_check = False
-
-                    if 'text' not in res_types and LING_OBJECT in record['resource'].labels:
-                        res_type_check = False
-
-
-
-                if len(text_search) > 0 and text_search.lower() not in json.dumps(self.nodeToDict(record['resource']),ensure_ascii=False).lower():
-                    check = False
-
-                lang_check = True if lang_id == -1 else False
-                if record['lang'] and lang_id == record['lang'].id:
-                    lang_check = True
-                
-
-                actor_check = True if actor_id == -1 else False
-                place_check = True if place_id == -1 else False
-                for event in record['events']:
-                    
-                    # collecting
-                    # 
-                    # 
-                    if event['actor'] and event['actor'].id not in actors_ids:
-                        actors.append(self.nodeToDict(event['actor']))
-                        actors_ids.append(event['actor'].id)
-                    if event['place'] and event['place'].id not in places_ids:
-                        places.append(self.nodeToDict(event['place']))
-                        places_ids.append(event['place'].id)
-
-                    # 
-                    # 
-                    # end collecting 
-
-
-                    if actor_id != -1:
-                        if event['actor'] and actor_id == event['actor'].id:
-                            actor_check = True
-
-                    if place_id != -1:
-                        if event['place'] and place_id == event['place'].id:
-                            place_check = True
-
-                genre_check = True if genre_id == -1 else False
-                for genre in record['genres']:
+                    current_res_type = record['resource'].get('res_type', '')
 
                     # collecting
                     # 
                     # 
-                    if genre.id not in genres_ids:
-                        genres.append(self.nodeToDict(genre))
-                        genres_ids.append(genre.id)
-                    # 
-                    # 
+                    if current_res_type != '':
+                        images = images + 1 if 'image' == current_res_type else images
+                        video = video + 1 if 'video' == current_res_type else video
+                        audio = audio + 1 if 'audio' == current_res_type else audio
+                        notes = notes + 1 if 'note' == current_res_type else notes
+                        articles = articles + 1 if 'article' == current_res_type else articles
+
+                    if LING_OBJECT in record['resource'].labels:
+                        texts += 1
+
+                    if record['lang'] and record['lang'].id not in langs_ids:
+                        langs.append(self.nodeToDict(record['lang']))
+                        langs_ids.append(record['lang'].id)
+                    #
+                    #  
                     # end collecting
 
-                    if genre_id != -1 and genre_id == genre.id:
-                        genre_check = True
+                    res_type_check = True
+                    if len(res_types) > 0:
+                        if LING_OBJECT not in record['resource'].labels and current_res_type not in res_types:
+                            res_type_check = False
 
-                if duplicate_check == False:
+                        if 'text' not in res_types and LING_OBJECT in record['resource'].labels:
+                            res_type_check = False
+
+
+
+                    if len(text_search) > 0 and text_search.lower() not in json.dumps(self.nodeToDict(record['resource']),ensure_ascii=False).lower():
+                        check = False
+
+                    lang_check = True if lang_id == -1 else False
+                    if record['lang'] and lang_id == record['lang'].id:
+                        lang_check = True
+                    
+
+                    actor_check = True if actor_id == -1 else False
+                    place_check = True if place_id == -1 else False
+                    for event in record['events']:
+                        
+                        # collecting
+                        # 
+                        # 
+                        if event['actor'] and event['actor'].id not in actors_ids:
+                            actors.append(self.nodeToDict(event['actor']))
+                            actors_ids.append(event['actor'].id)
+                        if event['place'] and event['place'].id not in places_ids:
+                            places.append(self.nodeToDict(event['place']))
+                            places_ids.append(event['place'].id)
+
+                        # 
+                        # 
+                        # end collecting 
+
+
+                        if actor_id != -1:
+                            if event['actor'] and actor_id == event['actor'].id:
+                                actor_check = True
+
+                        if place_id != -1:
+                            if event['place'] and place_id == event['place'].id:
+                                place_check = True
+
+                    genre_check = True if genre_id == -1 else False
+                    for genre in record['genres']:
+
+                        # collecting
+                        # 
+                        # 
+                        if genre.id not in genres_ids:
+                            genres.append(self.nodeToDict(genre))
+                            genres_ids.append(genre.id)
+                        # 
+                        # 
+                        # end collecting
+
+                        if genre_id != -1 and genre_id == genre.id:
+                            genre_check = True
+
                     if check and res_type_check and genre_check and actor_check and place_check and lang_check:
                         new_request.append(record)
 
