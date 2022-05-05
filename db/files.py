@@ -49,7 +49,6 @@ def uploadFile(request):
     res.resource_type = file_type
     res.save()
 
-    o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
 
     r, visual = o.connectDigitalToResource(file_type, res.id,name,object_node.id, note,res_type )
     res.original_object_uri = r['uri']
@@ -75,6 +74,7 @@ def uploadFile(request):
         }
     ]
 
+    o.close()
 
 
 
@@ -100,6 +100,8 @@ def cleanUp(request):
 
         o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
         res = o.cleanUp()
+
+        o.close()
 
     return Response({'counter': res})
     
@@ -328,6 +330,7 @@ def uploadDocx(request):
         }
     ]
 
+    o.close()
     
     # print('IDIDIDIDIDI:', created_node.id)
     return Response(response)

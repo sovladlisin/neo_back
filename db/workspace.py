@@ -65,6 +65,9 @@ def getWorkspace(request):
         'origin_node_extended': origin_node_extended
     }
 
+    o.close()
+
+
     return JsonResponse(result, safe=False)
 
 
@@ -82,6 +85,9 @@ def getMarkups(request):
         temp['user'] = {"id": m.account.pk, "username": m.account.username}
         temp['ontology'] = o.nodeToDict(o.getEntityByUri(m.ontology_uri))
         result.append(temp)
+
+    o.close()
+    
 
     return JsonResponse(result, safe=False)
 
@@ -105,6 +111,8 @@ def addMarkup(request):
     result['user'] = {"id": new_markup.account.pk, "username": new_markup.account.email}
     result['ontology'] = o.nodeToDict(o.getEntityByUri(new_markup.ontology_uri))
 
+    o.close()
+
     return JsonResponse(result, safe=False)
 
 @api_view(['POST', ])
@@ -125,6 +133,8 @@ def editMarkup(request):
     result = model_to_dict(new_markup)
     result['user'] = {"id": new_markup.user.pk, "username": new_markup.user.username}
     result['ontology'] = o.nodeToDict(o.getEntityByUri(new_markup.ontology_uri))
+
+    o.close()
 
     return JsonResponse(result, safe=False)
 
@@ -161,6 +171,8 @@ def createTextEntity(request):
     result = model_to_dict(new_entity)
     result['node'] = o.nodeToDict(o.getEntityByUri(new_entity.node_uri))
 
+    o.close()
+
 
     return JsonResponse(result, safe=False)
 
@@ -182,6 +194,8 @@ def getTextEntities(request):
         temp = model_to_dict(e)
         temp['node'] = o.nodeToDict(nodes[e.node_uri])
         result.append(temp)
+
+    o.close()
 
     return JsonResponse(result, safe=False)
 
@@ -222,6 +236,10 @@ def getNodeAttributes(request):
         "attributes": attributes_dict,
         "attributes_obj": attributes_obj_dict,
     }
+
+    o.close()
+
+
     return JsonResponse(result, safe=False)
 
 # relations
@@ -258,6 +276,8 @@ def getTextRelations(request):
 
     for e in TextRelation.objects.all().filter(markup__pk=markup_id):
         result.append(model_to_dict(e))
+
+    o.close()
 
     return JsonResponse(result, safe=False)
 

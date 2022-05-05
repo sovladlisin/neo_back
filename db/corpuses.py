@@ -24,6 +24,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 def getCorpuses(request):
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getCorpuses()
+    o.close()
     
     return JsonResponse(res, safe=False)
 
@@ -40,4 +41,5 @@ def getSubCorpuses(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+    o.close()
     return JsonResponse(result, safe=False)

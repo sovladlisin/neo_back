@@ -202,6 +202,9 @@ class Onthology:
         for item in r:
             return item.id
 
+    def close(self):
+        self.driver.close()
+        return True
 
     # 0 - none
     # image

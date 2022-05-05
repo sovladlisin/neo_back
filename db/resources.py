@@ -27,6 +27,8 @@ def getAllResources(request):
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.getResources()
     
+    o.close()
+
     return JsonResponse(res, safe=False)
 
 @api_view(['POST', ])
@@ -49,6 +51,8 @@ def getCorpusResources(request):
     print('Attention: ', res_types )
 
     res,data_size, counters = o.getCorpusResources(c_uri, res_types, text_search, lang_id, actor_id, place_id,genre_id, time_search, chunk_number, chunk_size)
+    o.close()
+    
     return JsonResponse({'data': res, 'data_size': data_size, 'counters': counters}, safe=False)
 
 @api_view(['POST', ])
@@ -67,5 +71,7 @@ def createEvent(request):
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     res = o.createEvent(actors_id, place_id, time_string,resource_id, connection_type )
+    o.close()
+    
     return HttpResponse(status=200)
 

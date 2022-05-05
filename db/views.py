@@ -34,6 +34,8 @@ def getVisualConnectedObjects(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
     return Response(result)
 
 @api_view(['GET', ])
@@ -44,6 +46,9 @@ def getDomainOntologies(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
+    
     return JsonResponse(result, safe=False)
 
 @api_view(['GET', ])
@@ -55,6 +60,9 @@ def getAllClasses(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
+    
     return JsonResponse(result, safe=False)
 
 
@@ -68,6 +76,9 @@ def getClasses(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
+    
     return JsonResponse(result, safe=False)
 
 
@@ -82,6 +93,9 @@ def getClassObjects(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
+    
     return JsonResponse(result, safe=False)
 
 @api_view(['GET', ])
@@ -131,6 +145,9 @@ def getClassObject(request):
     for t in text_nodes:
         texts.append(o.nodeToDict(t))
 
+    o.close()
+    
+
     return JsonResponse({'object': obj, 'class_signature': signature, 'class_attributes': attrs, 'relations': attrs_obj, 'entities': entities, 'texts': texts, 'resources': resources }, safe=False)
 
 @api_view(['GET', ])
@@ -145,6 +162,9 @@ def getClassFullSignature(request):
     type_dicts = []
     for node in type_nodes:
         type_dicts.append(o.nodeToDict(node))
+
+    o.close()
+    
 
     return JsonResponse({'class_signature':class_sig, 'parents_signature':parent_sig,'type_nodes':  type_dicts, 'class_node': class_node_dict}, safe=False)
 
@@ -193,6 +213,9 @@ def getClass(request):
     for t in text_nodes:
         texts.append(o.nodeToDict(t))
 
+    o.close()
+    
+
     return JsonResponse({'class': class_obj, 'attributes': attrs, 'objects': objs, 'types': types, 'attributes_obj':attrs_obj ,'attribute_types':types_attr, 'entities': entities, 'texts': texts}, safe=False)
 
 @api_view(['GET', ])
@@ -206,6 +229,9 @@ def getSubClasses(request):
     result = []
     for node in res:
         result.append(o.nodeToDict(node))
+
+    o.close()
+    
     return JsonResponse(result, safe=False)
 
 @api_view(['POST', ])
@@ -226,6 +252,9 @@ def addClassAttribute(request):
 
     res = o.addClassAttribute(class_id, STRING, props)
     result = o.nodeToDict(res)
+
+    o.close()
+
     return JsonResponse(result, safe=False)
 
 
@@ -247,6 +276,9 @@ def addClassAttributeObject(request):
 
     res = o.addClassAttributeObject(class_id, attribute_class_id, props)
     result = o.nodeToDict(res)
+
+    o.close()
+
     return JsonResponse(result, safe=False)
 
 
@@ -258,6 +290,9 @@ def getClassesWithSignatures(request):
     result = []
     for r in res:
         result.append(o.nodeToDict(r))
+
+    o.close()
+
     return JsonResponse(result, safe=False)
 
 @api_view(['GET', ])
@@ -272,6 +307,9 @@ def getObjectsByClassUri(request):
     result = []
     for r in res:
         result.append(o.nodeToDict(r))
+
+    o.close()
+
     return Response({'objects': result})
 
 # @csrf_exempt
@@ -302,7 +340,10 @@ def addEntity(request):
     node = data['node']
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     created_node = o.createEntity(labels, node)
-    print('IDIDIDIDIDI:', created_node.id)
+
+
+    o.close()
+
     return JsonResponse(o.nodeToDict(created_node), safe=False)
 
 @api_view(['POST', ])
@@ -313,7 +354,9 @@ def updateEntity(request):
     node = data['node']
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
     created_node = o.updateEntity(node)
-    print('IDIDIDIDIDI:', created_node.id)
+
+    o.close()
+
     return JsonResponse(o.nodeToDict(created_node), safe=False)
 
 @api_view(['DELETE', ])
@@ -325,7 +368,11 @@ def deleteEntity(request):
         return HttpResponse(status=403)
 
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD)
+
     node = o.deleteObject(id)
+
+    o.close()
+
     return JsonResponse({"result": True}, safe=False)
 
 
@@ -340,6 +387,9 @@ def updateIndex(request):
         return HttpResponse('Wrong request', status=404)
     o = Onthology(DB_URI,DB_USER, DB_PASSWORD,domain)
     res = o.updateIndex()
+
+    o.close()
+
 
     return JsonResponse({'result': res}, safe=False)
 
@@ -362,6 +412,9 @@ def searchIndex(request):
     for r in res:
         result.append(o.nodeToDict(r))
 
+    o.close()
+
+
     return JsonResponse(result, safe=False)
 
 
@@ -381,5 +434,8 @@ def deleteOntology(request):
 
     for m in Markup.objects.all().filter(ontology_uri=domain):
         m.delete()
+
+
+    o.close()
 
     return JsonResponse({"result": True}, safe=False)
